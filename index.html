@@ -3,33 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Gold - Global Edition</title>
+    <title>ShineSun Gold - Global Elite</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        :root { --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); --bg-color: #0b0b0b; --card-bg: #1c1c1e; --text-gold: #FFD700; }
-        body { background-color: var(--bg-color); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; user-select: none; overflow: hidden; }
-        .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
+        :root { 
+            --sun-gradient: radial-gradient(circle, #FFD700 0%, #FF8C00 100%); 
+            --bg-color: #0b0b0b; 
+            --card-bg: #1c1c1e; 
+            --text-gold: #FFD700; 
+        }
+        
+        body { 
+            background-color: var(--bg-color); color: white; 
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; 
+            user-select: none; overflow: hidden; touch-action: manipulation;
+        }
+
+        /* En-tête et Langues */
         .lang-select { position: fixed; top: 10px; right: 10px; background: #222; color: white; border: 1px solid var(--text-gold); border-radius: 5px; z-index: 2000; font-size: 10px; padding: 5px; }
+        .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
+        
+        /* Combo Slots */
         .header-info { text-align: center; margin-top: 25px; }
         .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
-        .combo-slot { width: 40px; height: 40px; background: #222; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; }
-        .main-score { font-size: 40px; font-weight: 900; text-align: center; margin: 10px 0; color: var(--text-gold); }
-        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        .sun-main { width: 170px; height: 170px; background: var(--sun-gradient); border-radius: 50%; box-shadow: 0 0 50px rgba(255, 140, 0, 0.4); cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1); }
-        .sun-main:active { transform: scale(0.92); }
+        .combo-slot { width: 45px; height: 45px; background: #222; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
+        .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; transform: scale(1.1); box-shadow: 0 0 10px var(--text-gold); }
+
+        /* Score et Soleil */
+        .main-score { font-size: 45px; font-weight: 900; text-align: center; margin: 15px 0; color: var(--text-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        
+        .sun-main { 
+            width: 190px; height: 190px; 
+            background: var(--sun-gradient); border-radius: 50%; 
+            box-shadow: 0 0 60px rgba(255, 140, 0, 0.5); 
+            cursor: pointer; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 10px solid rgba(255,255,255,0.1);
+            position: relative; z-index: 10;
+        }
+        .sun-main:active { transform: scale(0.88) rotate(-3deg); }
+
+        /* Effet +1 flottant */
+        .floating-text {
+            position: absolute; color: var(--text-gold); font-weight: bold; font-size: 28px;
+            pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 100;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+        }
+
+        /* Navigation */
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #151515; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-btn { color: #666; font-size: 9px; text-align: center; cursor: pointer; flex: 1; text-transform: uppercase; }
+        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-transform: uppercase; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
+
+        /* Panneaux de vue */
         .view-panel { position: fixed; top: 0; left: 0; width: 100%; height: 88vh; background: var(--bg-color); z-index: 500; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
-        .card-item { background: var(--card-bg); padding: 12px; border-radius: 14px; margin-bottom: 10px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
-        .btn-buy { background: var(--text-gold); border: none; padding: 8px 10px; border-radius: 8px; font-weight: bold; color: black; font-size: 11px; }
+        .card-item { background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn-buy { background: var(--text-gold); border: none; padding: 10px 14px; border-radius: 10px; font-weight: bold; color: black; font-size: 12px; transition: 0.2s; }
         .btn-buy.owned { background: #444; color: #888; }
-        .btn-action { background: var(--text-gold); border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; color: black; margin-top: 5px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #222; font-size: 13px; }
-        .rank-num { color: var(--text-gold); font-weight: bold; margin-right: 10px; }
+        .btn-action { background: var(--text-gold); border: none; padding: 15px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; color: black; font-size: 14px; }
+
+        .leader-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
+        .rank-num { color: var(--text-gold); font-weight: bold; margin-right: 12px; }
     </style>
 </head>
 <body>
@@ -51,7 +91,7 @@
 
 <div class="app-container" id="game-view">
     <div class="header-info">
-        <div id="t-combo-text" style="font-size: 10px; color: #888;">DAILY COMBO ???</div>
+        <div id="t-combo-text" style="font-size: 10px; color: #888; letter-spacing: 1px;">DAILY COMBO ???</div>
         <div class="combo-container">
             <div class="combo-slot" id="slot-0">?</div>
             <div class="combo-slot" id="slot-1">?</div>
@@ -59,20 +99,22 @@
         </div>
     </div>
     <div class="main-score" id="score-display">0</div>
-    <div class="game-area"><div class="sun-main" id="sun-btn"></div></div>
+    <div class="game-area">
+        <div class="sun-main" id="sun-btn"></div>
+    </div>
 </div>
 
 <div id="leader-panel" class="view-panel">
-    <h2 id="t-lead-head" style="color: var(--text-gold); margin-bottom:10px;">Global Ranking</h2>
-    <div id="leader-list" style="background:#111; border-radius:15px; padding:10px; margin-bottom:20px; max-height:180px; overflow-y:auto;">Loading...</div>
+    <h2 id="t-lead-head" style="color: var(--text-gold); margin-bottom:15px;">Ranking</h2>
+    <div id="leader-list" style="background:#111; border-radius:18px; padding:12px; margin-bottom:25px; max-height:200px; overflow-y:auto;">Loading...</div>
     
-    <h2 id="t-miss-head" style="color: var(--text-gold); margin-bottom:10px;">Missions</h2>
+    <h2 id="t-miss-head" style="color: var(--text-gold); margin-bottom:15px;">Missions</h2>
     <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000</small></div><button class="btn-buy" onclick="completeMission(10000)">GO</button></div>
     <div class="card-item"><div><b>Telegram</b><br><small>+15,000</small></div><button class="btn-buy" onclick="completeMission(15000)">JOIN</button></div>
 
-    <h2 id="t-ref-head" style="color: var(--text-gold); margin-top:20px; margin-bottom:10px;">Friends</h2>
-    <div style="background:var(--card-bg); padding:15px; border-radius:14px; border:1px solid #2c2c2e; text-align:center;">
-        <p id="t-ref-sub" style="font-size:12px; color:#888; margin-bottom:10px;">Invite friends and get 50,000 $SHINE!</p>
+    <h2 id="t-ref-head" style="color: var(--text-gold); margin-top:25px; margin-bottom:15px;">Friends</h2>
+    <div style="background:var(--card-bg); padding:20px; border-radius:16px; border:1px solid #2c2c2e; text-align:center;">
+        <p id="t-ref-sub" style="font-size:13px; color:#888; margin-bottom:15px;">Invite friends and get 50,000 $SHINE!</p>
         <button class="btn-action" onclick="shareToTelegram()" id="t-btn-share">📢 INVITE FRIENDS</button>
     </div>
 </div>
@@ -81,15 +123,15 @@
     <h2 id="t-boost-head" style="color: var(--text-gold);">Upgrades</h2>
     <div class="card-item">
         <div><b>Solar Panel</b><br><small id="t-up-1">Buy to use</small></div>
-        <div><button id="btn-☀️" class="btn-buy" onclick="buy('☀️', 1000)">1,000</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('☀️')">USE</button></div>
+        <div><button id="btn-☀️" class="btn-buy" onclick="buy('☀️', 1000)">1K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('☀️')">USE</button></div>
     </div>
     <div class="card-item">
         <div><b>Crystal Focus</b><br><small id="t-up-2">Buy to use</small></div>
-        <div><button id="btn-💎" class="btn-buy" onclick="buy('💎', 5000)">5,000</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('💎')">USE</button></div>
+        <div><button id="btn-💎" class="btn-buy" onclick="buy('💎', 5000)">5K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('💎')">USE</button></div>
     </div>
     <div class="card-item">
         <div><b>Nuclear Core</b><br><small id="t-up-3">Buy to use</small></div>
-        <div><button id="btn-🔥" class="btn-buy" onclick="buy('🔥', 15000)">15,000</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('🔥')">USE</button></div>
+        <div><button id="btn-🔥" class="btn-buy" onclick="buy('🔥', 15000)">15K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('🔥')">USE</button></div>
     </div>
 </div>
 
@@ -134,8 +176,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const tg = window.Telegram.WebApp;
-    const botUsername = "ShineSunGold_bot"; // CHANGE PAR TON NOM DE BOT
-    let user = tg.initDataUnsafe.user || { id: "test_user", first_name: "Explorer" };
+    const botUsername = "ShineSunGold_bot"; 
+    let user = tg.initDataUnsafe.user || { id: "test_dev", first_name: "Explorer" };
     let score = 0; let ownedItems = {}; let currentCombo = []; let lastDate = "";
 
     function init() {
@@ -180,18 +222,38 @@
         });
     }
 
-    document.getElementById('sun-btn').onclick = () => { score++; db.ref('users/' + user.id).update({score: score}); };
+    // INTERACTION SOLEIL AMÉLIORÉE
+    document.getElementById('sun-btn').addEventListener('click', (e) => {
+        score++; 
+        updateUI(); 
+        db.ref('users/' + user.id).update({score: score});
+
+        // Haptic Feedback
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+        // Effet +1
+        const floating = document.createElement('div');
+        floating.className = 'floating-text';
+        floating.innerText = '+1';
+        floating.style.left = `${e.clientX - 10}px`;
+        floating.style.top = `${e.clientY - 20}px`;
+        document.body.appendChild(floating);
+        setTimeout(() => floating.remove(), 700);
+    });
 
     function buy(i, c) { if(!ownedItems[i] && score >= c) { score -= c; ownedItems[i] = true; db.ref('users/' + user.id).update({score: score, ownedItems: ownedItems}); } }
 
-    function completeMission(r) { score += r; db.ref('users/' + user.id).update({score: score}); alert("Reward claimed!"); }
+    function completeMission(r) { score += r; db.ref('users/' + user.id).update({score: score}); alert("Success!"); }
 
     function tryCombo(s) {
         const today = new Date().toISOString().split('T')[0];
-        if(lastDate === today || !ownedItems[s]) { if(!ownedItems[s]) alert(window.msgNeed); return; }
+        if(lastDate === today) return;
+        if(!ownedItems[s]) { alert(window.msgNeed); return; }
+        
         currentCombo.push(s);
         document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
         document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
+        
         if(currentCombo.length === 3) {
             if(JSON.stringify(currentCombo) === JSON.stringify(['☀️', '💎', '🔥'])) {
                 score += 5000000; lastDate = today; alert(window.msgWin);
@@ -208,6 +270,7 @@
         if(v !== 'game') { document.getElementById(v + '-panel').style.display = 'block'; document.getElementById('nav-' + v).classList.add('active'); }
         else { document.getElementById('nav-game').classList.add('active'); }
     }
+    
     window.onload = () => { tg.expand(); init(); };
 </script>
 </body>
