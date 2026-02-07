@@ -2,103 +2,158 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShineSun Tap-to-Earn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ShineSun Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --sun-color: #ffcc00; --bg-dark: #1a1a1a; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; overflow: hidden; }
+        :root { --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); --bg-color: #0f0f0f; }
+        body { background-color: var(--bg-color); color: white; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; user-select: none; }
         
-        #header { padding: 20px; font-size: 24px; font-weight: bold; color: var(--sun-color); }
-        #score-container { font-size: 40px; margin: 20px 0; }
+        /* Layout */
+        .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* Le Soleil */
-        #sun-button {
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, #fff700 0%, #ff8800 100%);
-            border-radius: 50%; border: none;
-            box-shadow: 0 0 50px var(--sun-color);
-            cursor: pointer; transition: transform 0.1s;
-            margin: 20px auto; display: block;
-            outline: none; touch-action: manipulation;
-        }
-        #sun-button:active { transform: scale(0.9); }
+        /* Top Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: #1e1e1e; padding: 10px; border-radius: 12px; border: 1px solid #333; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .stat-value { font-size: 16px; font-weight: bold; color: #FFD700; }
 
-        /* Section Missions */
-        #missions { padding: 20px; background: #2a2a2a; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; width: 100%; height: 40%; overflow-y: auto; }
-        .mission-item {
-            background: #3a3a3a; padding: 15px; margin: 10px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center;
+        /* Score & Level */
+        .main-score { font-size: 48px; font-weight: 800; margin: 10px 0; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .level-badge { background: #333; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-bottom: 30px; display: inline-block; }
+
+        /* The Sun (Game Area) */
+        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        .sun-main {
+            width: 250px; height: 250px;
+            background: var(--sun-gradient);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 140, 0, 0.5);
+            border: 8px solid rgba(255,255,255,0.1);
+            cursor: pointer; transition: transform 0.05s;
+            z-index: 2;
         }
-        .btn-claim { background: var(--sun-color); color: black; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .sun-main:active { transform: scale(0.95); }
+
+        /* Energy Bar */
+        .energy-container { width: 100%; background: #333; height: 12px; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        #energy-fill { background: var(--sun-gradient); width: 100%; height: 100%; transition: width 0.2s; }
+
+        /* Navigation / Sections */
+        .nav-tabs { display: flex; justify-content: space-around; background: #1a1a1a; padding: 15px; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; }
+        .nav-item { color: #888; font-size: 12px; cursor: pointer; text-align: center; }
+        .nav-item.active { color: #FFD700; font-weight: bold; }
+
+        /* Floating text animation */
+        .plus-one { position: absolute; color: white; font-weight: bold; font-size: 24px; pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 10; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
 </head>
 <body>
 
-    <div id="header">☀️ SHINESUN TOKEN</div>
-    
-    <div id="score-container">
-        <span id="score">0</span> $SHINE
-    </div>
-
-    <button id="sun-button" onclick="tap()"></button>
-
-    <div id="missions">
-        <h3>MISSIONS SOCIALES 🚀</h3>
-        <div class="mission-item">
-            <span>Rejoindre Telegram</span>
-            <button class="btn-claim" onclick="completeMission('tg', 5000)">+5000</button>
+<div class="app-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Profit par clic</div>
+            <div class="stat-value" id="profit-per-click">+1</div>
         </div>
-        <div class="mission-item">
-            <span>Suivre sur X (Twitter)</span>
-            <button class="btn-claim" onclick="completeMission('x', 3000)">+3000</button>
-        </div>
-        <div class="mission-item">
-            <span>S'abonner TikTok</span>
-            <button class="btn-claim" onclick="completeMission('tk', 4000)">+4000</button>
+        <div class="stat-card">
+            <div class="stat-label">Objectif Palier</div>
+            <div class="stat-value">1M</div>
         </div>
     </div>
 
-    <script>
-        let score = parseInt(localStorage.getItem('shineScore')) || 0;
-        document.getElementById('score').innerText = score;
+    <div class="main-score" id="score">0</div>
+    <div class="level-badge" id="level-name">🌞 Étincelle Novice</div>
 
-        // Fonction Tap
-        function tap() {
-            score += 1;
-            updateScore();
-            // Petit feedback haptique (vibration) pour Telegram
-            if (window.Telegram.WebApp) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            }
+    <div class="game-area" id="game-area">
+        <div class="sun-main" id="sun-tap"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 14px;">
+        <span>⚡ Énergie</span>
+        <span id="energy-text">1000 / 1000</span>
+    </div>
+    <div class="energy-container">
+        <div id="energy-fill"></div>
+    </div>
+
+    <br><br><br> </div>
+
+<div class="nav-tabs">
+    <div class="nav-item active">🏠 Jeu</div>
+    <div class="nav-item" onclick="alert('Missions bientôt disponibles !')">🚀 Missions</div>
+    <div class="nav-item" onclick="alert('Boutique bientôt disponible !')">💰 Boosts</div>
+    <div class="nav-item" onclick="alert('Classement bientôt disponible !')">🏆 Top</div>
+</div>
+
+<script>
+    let score = parseInt(localStorage.getItem('shineScore')) || 0;
+    let energy = parseInt(localStorage.getItem('shineEnergy')) || 1000;
+    const maxEnergy = 1000;
+    const clickValue = 1;
+
+    const scoreEl = document.getElementById('score');
+    const energyEl = document.getElementById('energy-fill');
+    const energyText = document.getElementById('energy-text');
+    const sunBtn = document.getElementById('sun-tap');
+    const gameArea = document.getElementById('game-area');
+
+    function updateDisplay() {
+        scoreEl.innerText = score.toLocaleString();
+        energyText.innerText = `${energy} / ${maxEnergy}`;
+        energyEl.style.width = (energy / maxEnergy * 100) + "%";
+        
+        // Système de niveaux simple
+        const levelName = document.getElementById('level-name');
+        if(score > 100000) levelName.innerText = "👑 Dieu Solaire";
+        else if(score > 10000) levelName.innerText = "🔥 Géante Rouge";
+        else if(score > 1000) levelName.innerText = "✨ Éclat Brillant";
+    }
+
+    sunBtn.addEventListener('click', (e) => {
+        if (energy >= clickValue) {
+            score += clickValue;
+            energy -= clickValue;
+            
+            // Animation +1
+            createFloatingText(e.clientX, e.clientY);
+            
+            // Haptique Telegram
+            if (window.Telegram.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            
+            saveData();
+            updateDisplay();
         }
+    });
 
-        // Compléter une mission
-        function completeMission(id, reward) {
-            let done = localStorage.getItem('mission_' + id);
-            if (!done) {
-                score += reward;
-                updateScore();
-                localStorage.setItem('mission_' + id, 'true');
-                alert("Récompense récupérée ! ☀️");
-                
-                // Redirection vers les réseaux (exemples)
-                if(id === 'tg') window.open('https://t.me/TonLien');
-                if(id === 'x') window.open('https://x.com/TonCompte');
-            } else {
-                alert("Déjà fait !");
-            }
+    function createFloatingText(x, y) {
+        const text = document.createElement('div');
+        text.className = 'plus-one';
+        text.innerText = `+${clickValue}`;
+        text.style.left = `${x}px`;
+        text.style.top = `${y}px`;
+        document.body.appendChild(text);
+        setTimeout(() => text.remove(), 800);
+    }
+
+    // Recharge d'énergie automatique (1 point par seconde)
+    setInterval(() => {
+        if (energy < maxEnergy) {
+            energy++;
+            updateDisplay();
+            saveData();
         }
+    }, 1000);
 
-        function updateScore() {
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('shineScore', score);
-        }
+    function saveData() {
+        localStorage.setItem('shineScore', score);
+        localStorage.setItem('shineEnergy', energy);
+    }
 
-        // Initialisation Telegram
-        const tele = window.Telegram.WebApp;
-        tele.ready();
-        tele.expand(); // Ouvre la WebApp en plein écran
-    </script>
+    updateDisplay();
+    window.Telegram.WebApp.expand();
+</script>
+
 </body>
 </html>
