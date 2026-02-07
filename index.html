@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Gold - Ultra Edition</title>
+    <title>ShineSun Gold - Master Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -23,7 +23,6 @@
         .energy-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #fff700, #ffcc00); transition: width 0.2s; }
         .main-score { font-size: 48px; font-weight: 900; text-align: center; margin: 10px 0; color: white; }
 
-        /* SOLEIL JAUNE */
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         .sun-main { 
             width: 210px; height: 210px; 
@@ -35,10 +34,16 @@
 
         .view-panel { position: fixed; top: 0; left: 0; width: 100%; height: 88vh; background: var(--bg-color); z-index: 500; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 100px; }
         .card-item { background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Boutons d'invitation */
+        .btn-invite-main { background: var(--sun-main); border: none; padding: 15px; border-radius: 12px; font-weight: bold; color: black; cursor: pointer; width: 100%; font-size: 16px; margin-bottom: 10px; }
+        .btn-copy-small { background: #333; border: none; padding: 8px; border-radius: 8px; color: #aaa; cursor: pointer; width: 100%; font-size: 12px; }
+        
         .btn-buy { background: var(--sun-main); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; min-width: 75px; }
         .btn-buy.owned { background: #444; color: #888; pointer-events: none; }
-        .referral-box { background: #1a1a1a; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid var(--sun-main); }
+        .referral-box { background: #1a1a1a; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #333; }
 
+        .leader-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-btn { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; }
         .nav-btn.active { color: var(--sun-main); }
@@ -59,25 +64,25 @@
 </div>
 
 <div id="leader-panel" class="view-panel">
-    <h2 style="color: var(--sun-main);">Friends & Rewards</h2>
+    <h2 style="color: var(--sun-main);">Friends & Ranking</h2>
+    
     <div class="referral-box">
-        <div style="font-size: 14px; margin-bottom: 10px;">Invite tes amis et gagne 50k $SHINE</div>
-        <button class="btn-buy" style="width: 100%;" onclick="copyRef()">COPIER MON LIEN</button>
+        <div style="font-size: 15px; font-weight: bold; margin-bottom: 15px;">Invite tes amis et gagne 50,000 $SHINE</div>
+        <button class="btn-invite-main" onclick="shareTelegram()">INVITER UN AMI 👤</button>
+        <button class="btn-copy-small" onclick="copyRef()">Copier le lien</button>
     </div>
+
+    <h3 style="color: var(--sun-main);">Top 10 Players</h3>
+    <div id="leader-list" style="background:#111; border-radius:15px; padding:10px; margin-bottom:20px;">Chargement...</div>
+
     <h3 style="margin-top:20px;">Missions</h3>
-    <div id="mission-list">
-        <div class="card-item">
-            <div><b>TikTok</b><br><small>+20,000 $SHINE</small></div>
-            <button class="btn-buy" onclick="completeMission('tt', 20000, 'https://www.tiktok.com/@shinesungold')">GO</button>
-        </div>
-        <div class="card-item">
-            <div><b>Telegram</b><br><small>+15,000 $SHINE</small></div>
-            <button class="btn-buy" onclick="completeMission('tg', 15000, 'https://t.me/shinesun_gold')">JOIN</button>
-        </div>
-        <div class="card-item">
-            <div><b>X (Twitter)</b><br><small>+10,000 $SHINE</small></div>
-            <button class="btn-buy" onclick="completeMission('x', 10000, 'https://x.com/shinesun_gold')">FOLLOW</button>
-        </div>
+    <div class="card-item">
+        <div><b>TikTok</b><br><small>+20,000 $SHINE</small></div>
+        <button class="btn-buy" onclick="completeMission('tt', 20000, 'https://www.tiktok.com/@shinesungold')">GO</button>
+    </div>
+    <div class="card-item">
+        <div><b>Telegram</b><br><small>+15,000 $SHINE</small></div>
+        <button class="btn-buy" onclick="completeMission('tg', 15000, 'https://t.me/shinesun_gold')">JOIN</button>
     </div>
 </div>
 
@@ -119,7 +124,6 @@
     ];
 
     function init() {
-        // Chargement Firebase avec gestion des parrainages (Bonus au démarrage si referral)
         db.ref('users/' + user.id).on('value', (snap) => {
             const d = snap.val() || {};
             score = d.score || 0;
@@ -129,9 +133,8 @@
             updateUI();
         });
 
-        // Gestion du bonus de parrainage lors de la première inscription
         const startParam = tg.initDataUnsafe.start_param;
-        if (startParam && startParam !== user.id) {
+        if (startParam && startParam !== user.id.toString()) {
             db.ref('referrals/' + user.id).once('value', (s) => {
                 if(!s.exists()) {
                     db.ref('users/' + startParam).child('score').transaction(s => (s||0) + 50000);
@@ -139,7 +142,33 @@
                 }
             });
         }
+        loadLeaderboard();
         setInterval(() => { if(energy < 1000) { energy += 3; updateEnergyUI(); }}, 1000);
+    }
+
+    // --- NOUVELLE FONCTION SIMPLIFIÉE ---
+    function shareTelegram() {
+        const link = `https://t.me/shinesungame_bot?start=${user.id}`;
+        const text = encodeURIComponent("Rejoins-moi sur ShineSun Gold et gagne 50,000 $SHINE ! ☀️");
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`;
+        tg.openTelegramLink(shareUrl);
+    }
+
+    function copyRef() {
+        const link = `https://t.me/shinesungame_bot?start=${user.id}`;
+        navigator.clipboard.writeText(link);
+        tg.showAlert("Lien copié dans le presse-papier !");
+    }
+
+    function loadLeaderboard() {
+        db.ref('users').orderByChild('score').limitToLast(10).on('value', (snap) => {
+            let html = ''; let users = [];
+            snap.forEach(c => { users.push(c.val()); });
+            users.reverse().forEach((u, index) => {
+                html += `<div class="leader-row"><span>#${index+1} ${u.name}</span><b>${Math.floor(u.score).toLocaleString()}</b></div>`;
+            });
+            document.getElementById('leader-list').innerHTML = html;
+        });
     }
 
     function renderShop() {
@@ -160,13 +189,7 @@
         showPop(e, tap); tg.HapticFeedback.impactOccurred('medium');
     };
 
-    function save() { db.ref('users/' + user.id).update({score, ownedItems, completedMissions}); }
-
-    function copyRef() {
-        const link = "https://t.me/shinesungame_bot?start=" + user.id;
-        navigator.clipboard.writeText(link);
-        tg.showAlert("Lien copié ! Partage-le pour gagner 50,000 $SHINE !");
-    }
+    function save() { db.ref('users/' + user.id).update({score, ownedItems, completedMissions, name: user.first_name}); }
 
     function completeMission(id, r, l) {
         window.open(l, '_blank');
@@ -187,7 +210,7 @@
     }
     function showPop(e, t) {
         const f = document.createElement('div'); f.innerText = '+' + t;
-        f.style.cssText = `position:absolute; left:${e.clientX}px; top:${e.clientY}px; color:var(--sun-main); font-weight:900; font-size:30px; pointer-events:none;`;
+        f.style.cssText = `position:absolute; left:${e.clientX}px; top:${e.clientY}px; color:var(--sun-main); font-weight:900; font-size:30px; pointer-events:none; z-index:2000;`;
         f.animate([{transform:'translateY(0)', opacity:1}, {transform:'translateY(-100px)', opacity:0}], 600);
         document.body.appendChild(f); setTimeout(() => f.remove(), 600);
     }
