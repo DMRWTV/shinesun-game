@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Ultimate - Global</title>
+    <title>ShineSun - Global & Referral</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
@@ -39,8 +39,8 @@
 
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         .sun-main {
-            width: 200px; height: 200px; background: var(--sun-gradient);
-            border-radius: 50%; box-shadow: 0 0 60px rgba(255, 140, 0, 0.4);
+            width: 180px; height: 180px; background: var(--sun-gradient);
+            border-radius: 50%; box-shadow: 0 0 50px rgba(255, 140, 0, 0.4);
             cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1);
         }
         .sun-main:active { transform: scale(0.92); }
@@ -50,7 +50,7 @@
             background: #151515; border-top: 1px solid #333;
             display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
         }
-        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
+        .nav-btn { color: #666; font-size: 9px; text-align: center; cursor: pointer; flex: 1; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
 
         .view-panel {
@@ -65,11 +65,10 @@
         .card-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
         
-        .verify-box { display: flex; gap: 5px; width: 100%; margin-top: 10px; }
-        .input-pseudo { background: #000; border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; flex-grow: 1; }
-
-        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; z-index: 100; }
+        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; }
         @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
+
+        .ref-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--text-gold); text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -101,35 +100,45 @@
 <div id="mission-panel" class="view-panel">
     <h2 id="txt-miss-title" style="color: var(--text-gold);">Missions</h2>
     <div class="card-item"><div class="card-row"><div><b>X (Twitter)</b><br><small>+3,000</small></div><button class="btn-action" onclick="window.open('https://x.com')">GO</button></div></div>
-    <div class="card-item"><div class="card-row"><div><b id="txt-ig-story">Instagram Story</b><br><small>+20,000</small></div><button class="btn-action" onclick="document.getElementById('verify-ig').style.display='flex'">SHARE</button></div>
-        <div id="verify-ig" style="display:none;" class="verify-box"><input type="text" id="user-ig" class="input-pseudo" placeholder="@User"><button class="btn-action" onclick="verify('ig', 20000)">OK</button></div>
-    </div>
-    <div class="card-item"><div class="card-row"><div><b id="txt-tk-story">TikTok Story</b><br><small>+25,000</small></div><button class="btn-action" onclick="document.getElementById('verify-tk').style.display='flex'">SHARE</button></div>
-        <div id="verify-tk" style="display:none;" class="verify-box"><input type="text" id="user-tk" class="input-pseudo" placeholder="@User"><button class="btn-action" onclick="verify('tk', 25000)">OK</button></div>
-    </div>
+    <div class="card-item"><div class="card-row"><div><b id="txt-ig-story">Instagram Story</b><br><small>+20,000</small></div><button class="btn-action" onclick="alert('Shared!')">SHARE</button></div></div>
     <div class="card-item"><div class="card-row"><div><b>Telegram</b><br><small>+5,000</small></div><button class="btn-action" onclick="window.open('https://t.me')">JOIN</button></div></div>
 </div>
 
 <div id="boost-panel" class="view-panel">
     <h2 id="txt-boost-title" style="color: var(--text-gold);">Boosts</h2>
-    <div class="card-item" onclick="tryCombo('☀️')"><div class="card-row"><div><b id="txt-b1">Solar Panel</b><br><small>+10/h | 1,000</small></div><button class="btn-action" onclick="buy(1000, 10)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🚀')"><div class="card-row"><div><b id="txt-b2">Rocket</b><br><small>+50/h | 5,000</small></div><button class="btn-action" onclick="buy(5000, 50)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('💎')"><div class="card-row"><div><b id="txt-b3">Crystal</b><br><small>+100/h | 10,000</small></div><button class="btn-action" onclick="buy(10000, 100)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🔥')"><div class="card-row"><div><b id="txt-b4">Nuclear</b><br><small>+500/h | 50,000</small></div><button class="btn-action" onclick="buy(50000, 500)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('☀️')"><div class="card-row"><div><b id="txt-b1">Solar Panel</b><br><small id="txt-b1-desc">+10/h | 1,000</small></div><button class="btn-action" id="btn-buy-1" onclick="buy(1000, 10)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('🚀')"><div class="card-row"><div><b id="txt-b2">Rocket</b><br><small id="txt-b2-desc">+50/h | 5,000</small></div><button class="btn-action" id="btn-buy-2" onclick="buy(5000, 50)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('💎')"><div class="card-row"><div><b id="txt-b3">Crystal</b><br><small id="txt-b3-desc">+100/h | 10,000</small></div><button class="btn-action" id="btn-buy-3" onclick="buy(10000, 100)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('🔥')"><div class="card-row"><div><b id="txt-b4">Nuclear</b><br><small id="txt-b4-desc">+500/h | 50,000</small></div><button class="btn-action" id="btn-buy-4" onclick="buy(50000, 500)">BUY</button></div></div>
+</div>
+
+<div id="ref-panel" class="view-panel">
+    <h2 id="txt-ref-title" style="color: var(--text-gold);">Invite Friends</h2>
+    <p id="txt-ref-sub" style="font-size: 12px; color: #888;">Earn 50,000 $SHINE for every friend!</p>
+    <div class="ref-box">
+        <div id="txt-your-link" style="font-size: 10px; color: var(--text-gold); margin-bottom: 10px;">YOUR REFERRAL LINK:</div>
+        <code id="ref-link" style="font-size: 11px; word-break: break-all;">https://t.me/YOUR_BOT?start=user123</code>
+        <br><br>
+        <button class="btn-action" id="btn-copy" onclick="copyLink()">COPY LINK</button>
+    </div>
+    <div style="margin-top: 30px; text-align: center;">
+        <span id="txt-total-ref">Total Friends: 0</span>
+    </div>
 </div>
 
 <div class="footer-nav">
-    <div class="nav-btn active" onclick="showView('game')">🏠<br><span id="txt-home">Home</span></div>
-    <div class="nav-btn" onclick="showView('mission')">🚀<br><span id="txt-miss">Missions</span></div>
-    <div class="nav-btn" onclick="showView('boost')">💰<br><span id="txt-boost">Boosts</span></div>
+    <div class="nav-btn active" id="nav-btn-home" onclick="showView('game')">🏠<br><span id="txt-home">Home</span></div>
+    <div class="nav-btn" id="nav-btn-miss" onclick="showView('mission')">🚀<br><span id="txt-miss">Missions</span></div>
+    <div class="nav-btn" id="nav-btn-boost" onclick="showView('boost')">💰<br><span id="txt-boost">Boosts</span></div>
+    <div class="nav-btn" id="nav-btn-ref" onclick="showView('ref')">👥<br><span id="txt-ref">Friends</span></div>
 </div>
 
 <script>
     const i18n = {
-        en: { combo: "DAILY COMBO (+5M)", energy: "⚡ Energy", home: "Home", miss: "Missions", boost: "Boosts", ig: "Instagram Story", tk: "TikTok Story", b1: "Solar Panel", b2: "Rocket", b3: "Crystal", b4: "Nuclear" },
-        fr: { combo: "COMBO QUOTIDIEN (+5M)", energy: "⚡ Énergie", home: "Accueil", miss: "Missions", boost: "Boosts", ig: "Story Instagram", tk: "Story TikTok", b1: "Panneau Solaire", b2: "Fusée", b3: "Cristal", b4: "Nucléaire" },
-        es: { combo: "COMBO DIARIO (+5M)", energy: "⚡ Energía", home: "Inicio", miss: "Misiones", boost: "Mejoras", ig: "Story Instagram", tk: "Story TikTok", b1: "Panel Solar", b2: "Cohete", b3: "Cristal", b4: "Nuclear" },
-        tr: { combo: "GÜNLÜK KOMBO (+5M)", energy: "⚡ Enerji", home: "Ana Sayfa", miss: "Görevler", boost: "Güçler", ig: "Instagram Hikaye", tk: "TikTok Hikaye", b1: "Güneş Paneli", b2: "Roket", b3: "Kristal", b4: "Nükleer" }
+        en: { combo: "DAILY COMBO (+5M)", energy: "⚡ Energy", home: "Home", miss: "Missions", boost: "Boosts", ref: "Friends", refT: "Invite Friends", refS: "Earn 50,000 $SHINE for every friend!", copy: "COPY LINK", buy: "BUY", b1: "Solar Panel", b2: "Rocket", b3: "Crystal", b4: "Nuclear" },
+        fr: { combo: "COMBO QUOTIDIEN (+5M)", energy: "⚡ Énergie", home: "Accueil", miss: "Missions", boost: "Boosts", ref: "Amis", refT: "Inviter des Amis", refS: "Gagnez 50,000 $SHINE par ami !", copy: "COPIER LIEN", buy: "ACHETER", b1: "Panneau Solaire", b2: "Fusée Shine", b3: "Cristal de Feu", b4: "Fusion Nucléaire" },
+        es: { combo: "COMBO DIARIO (+5M)", energy: "⚡ Energía", home: "Inicio", miss: "Misiones", boost: "Mejoras", ref: "Amigos", refT: "Invitar Amigos", refS: "¡Gana 50,000 $SHINE por amigo!", copy: "COPIAR", buy: "COMPRAR", b1: "Panel Solar", b2: "Cohete", b3: "Cristal", b4: "Nuclear" },
+        tr: { combo: "GÜNLÜK KOMBO (+5M)", energy: "⚡ Enerji", home: "Ana Sayfa", miss: "Görevler", boost: "Güçler", ref: "Arkadaşlar", refT: "Arkadaş Davet Et", refS: "Her arkadaş için 50,000 $SHINE kazan!", copy: "KOPYALA", buy: "SATIN AL", b1: "Güneş Paneli", b2: "Roket", b3: "Kristal", b4: "Nükleer" }
     };
 
     function changeLanguage(l) {
@@ -139,10 +148,10 @@
         document.getElementById('txt-home').innerText = d.home;
         document.getElementById('txt-miss').innerText = d.miss;
         document.getElementById('txt-boost').innerText = d.boost;
-        document.getElementById('txt-miss-title').innerText = d.miss;
-        document.getElementById('txt-boost-title').innerText = d.boost;
-        document.getElementById('txt-ig-story').innerText = d.ig;
-        document.getElementById('txt-tk-story').innerText = d.tk;
+        document.getElementById('txt-ref').innerText = d.ref;
+        document.getElementById('txt-ref-title').innerText = d.refT;
+        document.getElementById('txt-ref-sub').innerText = d.refS;
+        document.getElementById('btn-copy').innerText = d.copy;
         document.getElementById('txt-b1').innerText = d.b1;
         document.getElementById('txt-b2').innerText = d.b2;
         document.getElementById('txt-b3').innerText = d.b3;
@@ -170,12 +179,23 @@
 
     function showView(v) {
         document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
-        if(v !== 'game') document.getElementById(v + '-panel').style.display = 'block';
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(v !== 'game') {
+            document.getElementById(v + '-panel').style.display = 'block';
+            document.getElementById('nav-btn-' + v).classList.add('active');
+        } else {
+            document.getElementById('nav-btn-home').classList.add('active');
+        }
     }
 
-    function buy(cost, pow) { if(score >= cost) { score -= cost; alert("Boost OK!"); updateUI(); save(); } }
-    function verify(p, r) { alert("Checking..."); score += r; updateUI(); save(); }
-    
+    function buy(cost, pow) { if(score >= cost) { score -= cost; updateUI(); save(); alert("Success!"); } }
+
+    function copyLink() {
+        const link = document.getElementById('ref-link').innerText;
+        navigator.clipboard.writeText(link);
+        alert("Link copied to clipboard!");
+    }
+
     function tryCombo(s) {
         if(currentCombo.length < 3) {
             currentCombo.push(s);
@@ -191,7 +211,16 @@
 
     setInterval(() => { if(energy < 1000) energy++; updateUI(); }, 1500);
     function save() { localStorage.setItem('sh_score', score); }
-    window.onload = () => { changeLanguage('en'); updateUI(); };
+
+    window.onload = () => {
+        // Détecter l'ID utilisateur Telegram si possible
+        const user = window.Telegram.WebApp.initDataUnsafe.user;
+        if(user) {
+            document.getElementById('ref-link').innerText = `https://t.me/ShineSun_bot?start=${user.id}`;
+        }
+        changeLanguage('en');
+        updateUI();
+    };
 </script>
 </body>
 </html>
