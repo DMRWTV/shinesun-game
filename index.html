@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Gold - Global Elite</title>
+    <title>ShineSun Gold - Social Elite</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -21,17 +21,14 @@
             user-select: none; overflow: hidden; touch-action: manipulation;
         }
 
-        /* En-tête et Langues */
         .lang-select { position: fixed; top: 10px; right: 10px; background: #222; color: white; border: 1px solid var(--text-gold); border-radius: 5px; z-index: 2000; font-size: 10px; padding: 5px; }
         .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* Combo Slots */
         .header-info { text-align: center; margin-top: 25px; }
         .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
         .combo-slot { width: 45px; height: 45px; background: #222; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
         .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; transform: scale(1.1); box-shadow: 0 0 10px var(--text-gold); }
 
-        /* Score et Soleil */
         .main-score { font-size: 45px; font-weight: 900; text-align: center; margin: 15px 0; color: var(--text-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         
@@ -45,7 +42,6 @@
         }
         .sun-main:active { transform: scale(0.88) rotate(-3deg); }
 
-        /* Effet +1 flottant */
         .floating-text {
             position: absolute; color: var(--text-gold); font-weight: bold; font-size: 28px;
             pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 100;
@@ -55,17 +51,15 @@
             100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
         }
 
-        /* Navigation */
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #151515; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-transform: uppercase; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
 
-        /* Panneaux de vue */
         .view-panel { position: fixed; top: 0; left: 0; width: 100%; height: 88vh; background: var(--bg-color); z-index: 500; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
         .card-item { background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
         
-        .btn-buy { background: var(--text-gold); border: none; padding: 10px 14px; border-radius: 10px; font-weight: bold; color: black; font-size: 12px; transition: 0.2s; }
-        .btn-buy.owned { background: #444; color: #888; }
+        .btn-buy { background: var(--text-gold); border: none; padding: 10px 14px; border-radius: 10px; font-weight: bold; color: black; font-size: 12px; transition: 0.2s; cursor: pointer; }
+        .btn-buy.owned { background: #444 !important; color: #888 !important; pointer-events: none; }
         .btn-action { background: var(--text-gold); border: none; padding: 15px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; color: black; font-size: 14px; }
 
         .leader-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
@@ -76,7 +70,7 @@
 
 <select class="lang-select" id="lang-picker" onchange="changeLanguage(this.value)">
     <option value="en">🇺🇸 English</option>
-    <option value="fr">🇫🇷 Français</option>
+    <option value="fr" selected>🇫🇷 Français</option>
     <option value="es">🇪🇸 Español</option>
     <option value="pt">🇵🇹 Português</option>
     <option value="it">🇮🇹 Italiano</option>
@@ -109,8 +103,9 @@
     <div id="leader-list" style="background:#111; border-radius:18px; padding:12px; margin-bottom:25px; max-height:200px; overflow-y:auto;">Loading...</div>
     
     <h2 id="t-miss-head" style="color: var(--text-gold); margin-bottom:15px;">Missions</h2>
-    <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000</small></div><button class="btn-buy" onclick="completeMission(10000)">GO</button></div>
-    <div class="card-item"><div><b>Telegram</b><br><small>+15,000</small></div><button class="btn-buy" onclick="completeMission(15000)">JOIN</button></div>
+    <div class="card-item"><div><b>TikTok</b><br><small>+20,000</small></div><button class="btn-buy" id="mission-tt" onclick="completeMission('tt', 20000, 'https://www.tiktok.com/@shinesunsol')">FOLLOW</button></div>
+    <div class="card-item"><div><b>Telegram Group</b><br><small>+15,000</small></div><button class="btn-buy" id="mission-tg" onclick="completeMission('tg', 15000, 'https://t.me/+PaP4Z39M2Pc3NmNk')">JOIN</button></div>
+    <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000</small></div><button class="btn-buy" id="mission-x" onclick="completeMission('x', 10000, 'https://x.com/ShineSunonSol')">FOLLOW</button></div>
 
     <h2 id="t-ref-head" style="color: var(--text-gold); margin-top:25px; margin-bottom:15px;">Friends</h2>
     <div style="background:var(--card-bg); padding:20px; border-radius:16px; border:1px solid #2c2c2e; text-align:center;">
@@ -143,10 +138,10 @@
 
 <script>
     const translations = {
-        en: { play: "Play", social: "Social", up: "Upgrades", buy: "Buy to use", win: "WINNER! +5M", fail: "WRONG! Items lost.", need: "Buy it first!", combo: "DAILY COMBO ???", miss: "Missions", friends: "Friends", sub: "Invite friends and get 50,000 $SHINE!", share: "📢 INVITE FRIENDS" },
-        fr: { play: "Jouer", social: "Social", up: "Boosts", buy: "Acheter pour utiliser", win: "GAGNÉ ! +5M", fail: "FAUX ! Objets perdus.", need: "Achetez-le d'abord !", combo: "COMBO DU JOUR ???", miss: "Missions", friends: "Amis", sub: "Invitez et gagnez 50,000 $SHINE !", share: "📢 INVITER DES AMIS" },
-        es: { play: "Jugar", social: "Social", up: "Mejoras", buy: "Comprar para usar", win: "¡GANASTE! +5M", fail: "¡ERROR! Objetos perdidos.", need: "¡Cómpralo primero!", combo: "COMBO DIARIO ???", miss: "Misiones", friends: "Amigos", sub: "¡Invita y gana 50,000 $SHINE!", share: "📢 INVITAR AMIGOS" },
-        ru: { play: "Играть", social: "Соцсети", up: "Улучшения", buy: "Купить", win: "ПОБЕДА! +5M", fail: "ОШИБКА!", need: "Сначала купите!", combo: "КОМБО ДНЯ ???", miss: "Задания", friends: "Друзья", sub: "Пригласи друга и получи 50,000!", share: "📢 ПРИГЛАСИТЬ" }
+        en: { play: "Play", social: "Social", up: "Upgrades", buy: "Buy to use", win: "WINNER! +5M", fail: "WRONG! Items lost.", need: "Buy it first!", combo: "DAILY COMBO ???", miss: "Missions", friends: "Friends", sub: "Invite friends and get 50,000 $SHINE!", share: "📢 INVITE FRIENDS", daily: "Welcome back! +5,000 bonus!", rank: "Ranking", claimed: "DONE" },
+        fr: { play: "Jouer", social: "Social", up: "Boosts", buy: "Acheter pour utiliser", win: "GAGNÉ ! +5M", fail: "FAUX ! Objets perdus.", need: "Achetez-le d'abord !", combo: "COMBO DU JOUR ???", miss: "Missions", friends: "Amis", sub: "Invitez et gagnez 50,000 $SHINE !", share: "📢 INVITER DES AMIS", daily: "Bon retour ! +5 000 bonus !", rank: "Classement", claimed: "REÇU" },
+        es: { play: "Jugar", social: "Social", up: "Mejoras", buy: "Comprar para usar", win: "¡GANASTE! +5M", fail: "¡ERROR! Objetos perdidos.", need: "¡Cómpralo primero!", combo: "COMBO DIARIO ???", miss: "Misiones", friends: "Amigos", sub: "¡Invita y gana 50,000 $SHINE!", share: "📢 INVITAR AMIGOS", daily: "¡Bienvenido! +5,000 bono!", rank: "Clasificación", claimed: "LISTO" },
+        ru: { play: "Играть", social: "Соцсети", up: "Улучшения", buy: "Купить", win: "ПОБЕДА! +5M", fail: "ОШИБКА!", need: "Сначала купите!", combo: "КОМБО ДНЯ ???", miss: "Задания", friends: "Друзья", sub: "Пригласи друга и получи 50,000!", share: "📢 ПРИГЛАСИТЬ", daily: "С возвращением! +5,000 бонус!", rank: "Рейтинг", claimed: "ГОТОВО" }
     };
 
     function changeLanguage(lang) {
@@ -155,13 +150,16 @@
         document.getElementById('t-nav-2').innerText = t.social;
         document.getElementById('t-nav-3').innerText = t.up;
         document.getElementById('t-combo-text').innerText = t.combo;
-        document.getElementById('t-lead-head').innerText = "Ranking";
+        document.getElementById('t-lead-head').innerText = t.rank;
         document.getElementById('t-miss-head').innerText = t.miss;
         document.getElementById('t-ref-head').innerText = t.friends;
         document.getElementById('t-ref-sub').innerText = t.sub;
         document.getElementById('t-btn-share').innerText = t.share;
         document.getElementById('t-boost-head').innerText = t.up;
-        window.msgWin = t.win; window.msgFail = t.fail; window.msgNeed = t.need;
+        document.getElementById('t-up-1').innerText = t.buy;
+        document.getElementById('t-up-2').innerText = t.buy;
+        document.getElementById('t-up-3').innerText = t.buy;
+        window.msgWin = t.win; window.msgFail = t.fail; window.msgNeed = t.need; window.msgDaily = t.daily; window.msgClaimed = t.claimed;
     }
 
     const firebaseConfig = {
@@ -178,15 +176,44 @@
     const tg = window.Telegram.WebApp;
     const botUsername = "ShineSunGold_bot"; 
     let user = tg.initDataUnsafe.user || { id: "test_dev", first_name: "Explorer" };
-    let score = 0; let ownedItems = {}; let currentCombo = []; let lastDate = "";
+    let score = 0; let ownedItems = {}; let completedMissions = {}; let lastDailyBonus = "";
 
     function init() {
-        changeLanguage('en');
+        changeLanguage('fr');
+        db.ref('users/' + user.id).once('value', (snap) => {
+            const d = snap.val();
+            const today = new Date().toISOString().split('T')[0];
+            
+            if(d) { 
+                score = d.score; 
+                ownedItems = d.ownedItems || {}; 
+                completedMissions = d.completedMissions || {};
+                lastDailyBonus = d.lastDailyBonus || "";
+                
+                if (lastDailyBonus !== today) {
+                    score += 5000;
+                    lastDailyBonus = today;
+                    db.ref('users/' + user.id).update({score: score, lastDailyBonus: today});
+                    setTimeout(() => alert(window.msgDaily), 1000);
+                }
+                updateUI(); 
+            }
+            else { 
+                checkReferral(); 
+                db.ref('users/' + user.id).set({
+                    name: user.first_name, 
+                    score: 5000, 
+                    lastDailyBonus: today
+                }); 
+                alert(window.msgDaily);
+            }
+        });
+
         db.ref('users/' + user.id).on('value', (snap) => {
             const d = snap.val();
-            if(d) { score = d.score; ownedItems = d.ownedItems || {}; lastDate = d.lastDate || ""; updateUI(); }
-            else { checkReferral(); db.ref('users/' + user.id).set({name: user.first_name, score: 0}); }
+            if(d) { score = d.score; ownedItems = d.ownedItems || {}; completedMissions = d.completedMissions || {}; updateUI(); }
         });
+        
         loadLeaderboard();
     }
 
@@ -200,7 +227,7 @@
 
     function shareToTelegram() {
         const url = `https://t.me/${botUsername}/myapp?startapp=${user.id}`;
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=Join me on ShineSun Gold! ☀️`);
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=Rejoins-moi sur ShineSun Gold! ☀️`);
     }
 
     function loadLeaderboard() {
@@ -218,20 +245,17 @@
         ['☀️', '💎', '🔥'].forEach(i => {
             const b = document.getElementById('btn-' + i);
             if(ownedItems[i]) { b.innerText = "OWN"; b.classList.add('owned'); }
-            else { b.classList.remove('owned'); b.innerText = (i==='☀️'?'1K':i==='💎'?'5K':'15K'); }
         });
+        if(completedMissions['x']) { document.getElementById('mission-x').innerText = window.msgClaimed; document.getElementById('mission-x').classList.add('owned'); }
+        if(completedMissions['tg']) { document.getElementById('mission-tg').innerText = window.msgClaimed; document.getElementById('mission-tg').classList.add('owned'); }
+        if(completedMissions['tt']) { document.getElementById('mission-tt').innerText = window.msgClaimed; document.getElementById('mission-tt').classList.add('owned'); }
     }
 
-    // INTERACTION SOLEIL AMÉLIORÉE
     document.getElementById('sun-btn').addEventListener('click', (e) => {
         score++; 
         updateUI(); 
         db.ref('users/' + user.id).update({score: score});
-
-        // Haptic Feedback
         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-        // Effet +1
         const floating = document.createElement('div');
         floating.className = 'floating-text';
         floating.innerText = '+1';
@@ -243,23 +267,32 @@
 
     function buy(i, c) { if(!ownedItems[i] && score >= c) { score -= c; ownedItems[i] = true; db.ref('users/' + user.id).update({score: score, ownedItems: ownedItems}); } }
 
-    function completeMission(r) { score += r; db.ref('users/' + user.id).update({score: score}); alert("Success!"); }
+    function completeMission(id, reward, link) {
+        if(completedMissions[id]) return;
+        window.open(link, '_blank');
+        setTimeout(() => {
+            score += reward;
+            completedMissions[id] = true;
+            db.ref('users/' + user.id).update({score: score, completedMissions: completedMissions});
+            alert("Reward claimed!");
+        }, 2000);
+    }
 
     function tryCombo(s) {
-        const today = new Date().toISOString().split('T')[0];
-        if(lastDate === today) return;
         if(!ownedItems[s]) { alert(window.msgNeed); return; }
-        
+        let currentCombo = window.currentComboArr || [];
         currentCombo.push(s);
+        window.currentComboArr = currentCombo;
+        
         document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
         document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
         
         if(currentCombo.length === 3) {
             if(JSON.stringify(currentCombo) === JSON.stringify(['☀️', '💎', '🔥'])) {
-                score += 5000000; lastDate = today; alert(window.msgWin);
+                score += 5000000; db.ref('users/' + user.id).update({score: score}); alert(window.msgWin);
             } else { alert(window.msgFail); }
-            ownedItems = {}; currentCombo = [];
-            db.ref('users/' + user.id).update({score: score, lastDate: lastDate, ownedItems: ownedItems});
+            ownedItems = {}; window.currentComboArr = [];
+            db.ref('users/' + user.id).update({ownedItems: ownedItems});
             setTimeout(() => { for(let i=0;i<3;i++){document.getElementById(`slot-${i}`).innerText="?"; document.getElementById(`slot-${i}`).classList.remove('active');}}, 800);
         }
     }
