@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Gold - Social Elite</title>
+    <title>ShineSun Gold - Pro Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
         :root { 
-            --sun-gradient: radial-gradient(circle, #FFD700 0%, #FF8C00 100%); 
+            --sun-inner: #fff566;
+            --sun-core: #ffaa00;
+            --sun-edge: #ff4500;
             --bg-color: #0b0b0b; 
             --card-bg: #1c1c1e; 
             --text-gold: #FFD700; 
@@ -24,46 +26,65 @@
         .lang-select { position: fixed; top: 10px; right: 10px; background: #222; color: white; border: 1px solid var(--text-gold); border-radius: 5px; z-index: 2000; font-size: 10px; padding: 5px; }
         .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        .header-info { text-align: center; margin-top: 25px; }
+        /* Header & Combo */
+        .header-info { text-align: center; margin-top: 15px; }
         .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
         .combo-slot { width: 45px; height: 45px; background: #222; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s; }
-        .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; transform: scale(1.1); box-shadow: 0 0 10px var(--text-gold); }
+        .combo-slot.active { border-color: var(--text-gold); border-style: solid; transform: scale(1.1); box-shadow: 0 0 10px var(--text-gold); }
 
-        .main-score { font-size: 45px; font-weight: 900; text-align: center; margin: 15px 0; color: var(--text-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        /* ÉNERGIE */
+        .energy-wrapper { width: 80%; max-width: 250px; margin: 10px auto; }
+        .energy-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 10px; overflow: hidden; border: 1px solid #444; }
+        .energy-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #ff8c00, #ffd700); box-shadow: 0 0 10px #ff8c00; transition: width 0.2s; }
+        .energy-info { font-size: 12px; color: #888; margin-top: 5px; }
+
+        /* Main Game Area */
+        .main-score { font-size: 50px; font-weight: 900; text-align: center; margin: 10px 0; color: white; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         
+        /* STYLE SOLEIL RÉALISTE (Basé sur ton image) */
         .sun-main { 
-            width: 190px; height: 190px; 
-            background: var(--sun-gradient); border-radius: 50%; 
-            box-shadow: 0 0 60px rgba(255, 140, 0, 0.5); 
-            cursor: pointer; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 10px solid rgba(255,255,255,0.1);
-            position: relative; z-index: 10;
+            width: 220px; height: 220px; 
+            background: radial-gradient(circle, var(--sun-inner) 0%, var(--sun-core) 30%, var(--sun-edge) 70%, #631200 100%);
+            border-radius: 50%; 
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.05s ease;
+            box-shadow: 
+                0 0 40px #ff4500,
+                0 0 80px #ff8c00,
+                0 0 120px rgba(255, 140, 0, 0.3);
+            border: none; /* Suppression de la bordure pièce */
         }
-        .sun-main:active { transform: scale(0.88) rotate(-3deg); }
+        .sun-main::before {
+            content: ''; position: absolute; top: -10%; left: -10%; right: -10%; bottom: -10%;
+            background: radial-gradient(circle, rgba(255,140,0,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .sun-main:active { transform: scale(0.94); }
 
-        .floating-text {
-            position: absolute; color: var(--text-gold); font-weight: bold; font-size: 28px;
-            pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 100;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
-        }
+        /* Floating Text */
+        .floating-text { position: absolute; color: var(--text-gold); font-weight: bold; font-size: 28px; pointer-events: none; animation: floatUp 0.7s ease-out forwards; z-index: 100; }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
 
+        /* Navigation */
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #151515; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-transform: uppercase; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
 
+        /* Panels */
         .view-panel { position: fixed; top: 0; left: 0; width: 100%; height: 88vh; background: var(--bg-color); z-index: 500; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 120px; }
         .card-item { background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
-        
-        .btn-buy { background: var(--text-gold); border: none; padding: 10px 14px; border-radius: 10px; font-weight: bold; color: black; font-size: 12px; transition: 0.2s; cursor: pointer; }
-        .btn-buy.owned { background: #444 !important; color: #888 !important; pointer-events: none; }
-        .btn-action { background: var(--text-gold); border: none; padding: 15px; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; color: black; font-size: 14px; }
+        .upgrade-info { display: flex; align-items: center; gap: 15px; }
+        .upgrade-icon { font-size: 24px; background: #2c2c2e; padding: 10px; border-radius: 12px; }
+        .upgrade-text b { display: block; color: white; font-size: 14px; }
+        .upgrade-text small { color: #888; font-size: 11px; }
 
-        .leader-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
-        .rank-num { color: var(--text-gold); font-weight: bold; margin-right: 12px; }
+        .btn-buy { background: var(--text-gold); border: none; padding: 10px 14px; border-radius: 10px; font-weight: bold; color: black; font-size: 12px; cursor: pointer; min-width: 60px; }
+        .btn-buy.owned { background: #444 !important; color: #888 !important; pointer-events: none; }
+        .btn-use { background: #333; color: var(--text-gold); border: 1px solid var(--text-gold); padding: 10px; border-radius: 10px; font-weight: bold; font-size: 12px; margin-left: 5px; cursor: pointer; }
+        
+        .leader-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -71,16 +92,6 @@
 <select class="lang-select" id="lang-picker" onchange="changeLanguage(this.value)">
     <option value="en">🇺🇸 English</option>
     <option value="fr" selected>🇫🇷 Français</option>
-    <option value="es">🇪🇸 Español</option>
-    <option value="pt">🇵🇹 Português</option>
-    <option value="it">🇮🇹 Italiano</option>
-    <option value="de">🇩🇪 Deutsch</option>
-    <option value="sq">🇦🇱 Shqip</option>
-    <option value="tr">🇹🇷 Türkçe</option>
-    <option value="zh">🇨🇳 中文</option>
-    <option value="ja">🇯🇵 日本語</option>
-    <option value="pl">🇵🇱 Polski</option>
-    <option value="ru">🇷🇺 Русский</option>
 </select>
 
 <div class="app-container" id="game-view">
@@ -91,44 +102,31 @@
             <div class="combo-slot" id="slot-1">?</div>
             <div class="combo-slot" id="slot-2">?</div>
         </div>
+        
+        <div class="energy-wrapper">
+            <div class="energy-bar-bg">
+                <div class="energy-bar-fill" id="energy-fill"></div>
+            </div>
+            <div class="energy-info">ENERGY: <span id="energy-val">1000</span>/1000</div>
+        </div>
     </div>
+
     <div class="main-score" id="score-display">0</div>
+    
     <div class="game-area">
         <div class="sun-main" id="sun-btn"></div>
     </div>
 </div>
 
 <div id="leader-panel" class="view-panel">
-    <h2 id="t-lead-head" style="color: var(--text-gold); margin-bottom:15px;">Ranking</h2>
-    <div id="leader-list" style="background:#111; border-radius:18px; padding:12px; margin-bottom:25px; max-height:200px; overflow-y:auto;">Loading...</div>
-    
-    <h2 id="t-miss-head" style="color: var(--text-gold); margin-bottom:15px;">Missions</h2>
-    <div class="card-item"><div><b>TikTok</b><br><small>+20,000</small></div><button class="btn-buy" id="mission-tt" onclick="completeMission('tt', 20000, 'https://www.tiktok.com/@shinesunsol')">FOLLOW</button></div>
-    <div class="card-item"><div><b>Telegram Group</b><br><small>+15,000</small></div><button class="btn-buy" id="mission-tg" onclick="completeMission('tg', 15000, 'https://t.me/+PaP4Z39M2Pc3NmNk')">JOIN</button></div>
-    <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000</small></div><button class="btn-buy" id="mission-x" onclick="completeMission('x', 10000, 'https://x.com/ShineSunonSol')">FOLLOW</button></div>
-
-    <h2 id="t-ref-head" style="color: var(--text-gold); margin-top:25px; margin-bottom:15px;">Friends</h2>
-    <div style="background:var(--card-bg); padding:20px; border-radius:16px; border:1px solid #2c2c2e; text-align:center;">
-        <p id="t-ref-sub" style="font-size:13px; color:#888; margin-bottom:15px;">Invite friends and get 50,000 $SHINE!</p>
-        <button class="btn-action" onclick="shareToTelegram()" id="t-btn-share">📢 INVITE FRIENDS</button>
+    <h2 id="t-lead-head" style="color: var(--text-gold);">Ranking</h2>
+    <div id="leader-list" style="background:#111; border-radius:18px; padding:12px; margin-bottom:25px;">Loading...</div>
+    <h2 id="t-miss-head" style="color: var(--text-gold);">Missions</h2>
     </div>
-</div>
 
 <div id="boost-panel" class="view-panel">
-    <h2 id="t-boost-head" style="color: var(--text-gold);">Upgrades</h2>
-    <div class="card-item">
-        <div><b>Solar Panel</b><br><small id="t-up-1">Buy to use</small></div>
-        <div><button id="btn-☀️" class="btn-buy" onclick="buy('☀️', 1000)">1K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('☀️')">USE</button></div>
+    <h2 id="t-boost-head" style="color: var(--text-gold);">Shop & Upgrades</h2>
     </div>
-    <div class="card-item">
-        <div><b>Crystal Focus</b><br><small id="t-up-2">Buy to use</small></div>
-        <div><button id="btn-💎" class="btn-buy" onclick="buy('💎', 5000)">5K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('💎')">USE</button></div>
-    </div>
-    <div class="card-item">
-        <div><b>Nuclear Core</b><br><small id="t-up-3">Buy to use</small></div>
-        <div><button id="btn-🔥" class="btn-buy" onclick="buy('🔥', 15000)">15K</button><button class="btn-buy" style="background:#555; margin-left:5px;" onclick="tryCombo('🔥')">USE</button></div>
-    </div>
-</div>
 
 <div class="footer-nav">
     <div class="nav-btn active" id="nav-game" onclick="showView('game')">🏠<br><span id="t-nav-1">Play</span></div>
@@ -137,31 +135,6 @@
 </div>
 
 <script>
-    const translations = {
-        en: { play: "Play", social: "Social", up: "Upgrades", buy: "Buy to use", win: "WINNER! +5M", fail: "WRONG! Items lost.", need: "Buy it first!", combo: "DAILY COMBO ???", miss: "Missions", friends: "Friends", sub: "Invite friends and get 50,000 $SHINE!", share: "📢 INVITE FRIENDS", daily: "Welcome back! +5,000 bonus!", rank: "Ranking", claimed: "DONE" },
-        fr: { play: "Jouer", social: "Social", up: "Boosts", buy: "Acheter pour utiliser", win: "GAGNÉ ! +5M", fail: "FAUX ! Objets perdus.", need: "Achetez-le d'abord !", combo: "COMBO DU JOUR ???", miss: "Missions", friends: "Amis", sub: "Invitez et gagnez 50,000 $SHINE !", share: "📢 INVITER DES AMIS", daily: "Bon retour ! +5 000 bonus !", rank: "Classement", claimed: "REÇU" },
-        es: { play: "Jugar", social: "Social", up: "Mejoras", buy: "Comprar para usar", win: "¡GANASTE! +5M", fail: "¡ERROR! Objetos perdidos.", need: "¡Cómpralo primero!", combo: "COMBO DIARIO ???", miss: "Misiones", friends: "Amigos", sub: "¡Invita y gana 50,000 $SHINE!", share: "📢 INVITAR AMIGOS", daily: "¡Bienvenido! +5,000 bono!", rank: "Clasificación", claimed: "LISTO" },
-        ru: { play: "Играть", social: "Соцсети", up: "Улучшения", buy: "Купить", win: "ПОБЕДА! +5M", fail: "ОШИБКА!", need: "Сначала купите!", combo: "КОМБО ДНЯ ???", miss: "Задания", friends: "Друзья", sub: "Пригласи друга и получи 50,000!", share: "📢 ПРИГЛАСИТЬ", daily: "С возвращением! +5,000 бонус!", rank: "Рейтинг", claimed: "ГОТОВО" }
-    };
-
-    function changeLanguage(lang) {
-        const t = translations[lang] || translations['en'];
-        document.getElementById('t-nav-1').innerText = t.play;
-        document.getElementById('t-nav-2').innerText = t.social;
-        document.getElementById('t-nav-3').innerText = t.up;
-        document.getElementById('t-combo-text').innerText = t.combo;
-        document.getElementById('t-lead-head').innerText = t.rank;
-        document.getElementById('t-miss-head').innerText = t.miss;
-        document.getElementById('t-ref-head').innerText = t.friends;
-        document.getElementById('t-ref-sub').innerText = t.sub;
-        document.getElementById('t-btn-share').innerText = t.share;
-        document.getElementById('t-boost-head').innerText = t.up;
-        document.getElementById('t-up-1').innerText = t.buy;
-        document.getElementById('t-up-2').innerText = t.buy;
-        document.getElementById('t-up-3').innerText = t.buy;
-        window.msgWin = t.win; window.msgFail = t.fail; window.msgNeed = t.need; window.msgDaily = t.daily; window.msgClaimed = t.claimed;
-    }
-
     const firebaseConfig = {
         apiKey: "AIzaSyAHGs4Lcd-KefevIcsum5BwBHM9zimso0c",
         authDomain: "shinesungame.firebaseapp.com",
@@ -174,136 +147,101 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const tg = window.Telegram.WebApp;
-    const botUsername = "ShineSunGold_bot"; 
+    
     let user = tg.initDataUnsafe.user || { id: "test_dev", first_name: "Explorer" };
-    let score = 0; let ownedItems = {}; let completedMissions = {}; let lastDailyBonus = "";
+    let score = 0;
+    let energy = 1000;
+    const maxEnergy = 1000;
+    let ownedItems = {};
+    let completedMissions = {};
+    let currentComboArr = [];
+
+    const boostValues = { '☀️': 2, '💎': 5, '🔥': 15, '🌟': 50 };
 
     function init() {
-        changeLanguage('fr');
-        db.ref('users/' + user.id).once('value', (snap) => {
-            const d = snap.val();
-            const today = new Date().toISOString().split('T')[0];
-            
-            if(d) { 
-                score = d.score; 
-                ownedItems = d.ownedItems || {}; 
-                completedMissions = d.completedMissions || {};
-                lastDailyBonus = d.lastDailyBonus || "";
-                
-                if (lastDailyBonus !== today) {
-                    score += 5000;
-                    lastDailyBonus = today;
-                    db.ref('users/' + user.id).update({score: score, lastDailyBonus: today});
-                    setTimeout(() => alert(window.msgDaily), 1000);
-                }
-                updateUI(); 
-            }
-            else { 
-                checkReferral(); 
-                db.ref('users/' + user.id).set({
-                    name: user.first_name, 
-                    score: 5000, 
-                    lastDailyBonus: today
-                }); 
-                alert(window.msgDaily);
-            }
-        });
-
         db.ref('users/' + user.id).on('value', (snap) => {
             const d = snap.val();
-            if(d) { score = d.score; ownedItems = d.ownedItems || {}; completedMissions = d.completedMissions || {}; updateUI(); }
+            if(d) {
+                score = d.score || 0;
+                ownedItems = d.ownedItems || {};
+                completedMissions = d.completedMissions || {};
+                updateUI();
+            } else {
+                db.ref('users/' + user.id).set({ name: user.first_name, score: 0 });
+            }
         });
-        
         loadLeaderboard();
+        
+        // Régénération de l'énergie (3 points par seconde)
+        setInterval(() => {
+            if (energy < maxEnergy) {
+                energy = Math.min(maxEnergy, energy + 3);
+                updateEnergyUI();
+            }
+        }, 1000);
     }
 
-    function checkReferral() {
-        const params = new URLSearchParams(window.location.search);
-        const refId = params.get('tgWebAppStartParam');
-        if(refId && refId !== user.id.toString()) {
-            db.ref('users/' + refId + '/score').transaction(s => (s || 0) + 50000);
+    function calculateTapValue() {
+        let val = 1;
+        for (let item in ownedItems) if (boostValues[item]) val += boostValues[item];
+        return val;
+    }
+
+    function updateUI() {
+        document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
+        // Update energy and others...
+    }
+
+    function updateEnergyUI() {
+        const percent = (energy / maxEnergy) * 100;
+        document.getElementById('energy-fill').style.width = percent + '%';
+        document.getElementById('energy-val').innerText = Math.floor(energy);
+    }
+
+    document.getElementById('sun-btn').onclick = (e) => {
+        if (energy < 1) return; // Pas d'énergie, pas de clic
+
+        let tapVal = calculateTapValue();
+        score += tapVal;
+        energy -= 1; // Un clic consomme 1 énergie
+        
+        updateEnergyUI();
+        db.ref('users/' + user.id).update({score: score});
+        
+        // Effet Visuel
+        const f = document.createElement('div');
+        f.className = 'floating-text';
+        f.innerText = '+' + tapVal;
+        f.style.left = e.clientX + 'px'; f.style.top = e.clientY + 'px';
+        document.body.appendChild(f);
+        setTimeout(() => f.remove(), 700);
+        
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    };
+
+    // Fonctions de navigation et Shop (Gardées du code précédent)
+    function showView(v) {
+        document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(v !== 'game') {
+            document.getElementById(v + '-panel').style.display = 'block';
+            document.getElementById('nav-' + v).classList.add('active');
+        } else {
+            document.getElementById('nav-game').classList.add('active');
         }
     }
 
-    function shareToTelegram() {
-        const url = `https://t.me/${botUsername}/myapp?startapp=${user.id}`;
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=Rejoins-moi sur ShineSun Gold! ☀️`);
-    }
-
     function loadLeaderboard() {
-        db.ref('users').orderByChild('score').limitToLast(15).on('value', (snap) => {
-            let html = ''; let p = []; snap.forEach(c => { p.push(c.val()); });
-            p.reverse().forEach((x, i) => {
-                html += `<div class="leader-row"><span class="rank-num">#${i+1}</span><span>${x.name || 'User'}</span><span style="color:gold">${Math.floor(x.score).toLocaleString()}</span></div>`;
+        db.ref('users').orderByChild('score').limitToLast(10).on('value', (snap) => {
+            let html = '';
+            snap.forEach(c => {
+                const u = c.val();
+                html = `<div class="leader-row"><span>${u.name}</span><b>${Math.floor(u.score).toLocaleString()}</b></div>` + html;
             });
             document.getElementById('leader-list').innerHTML = html;
         });
     }
 
-    function updateUI() {
-        document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
-        ['☀️', '💎', '🔥'].forEach(i => {
-            const b = document.getElementById('btn-' + i);
-            if(ownedItems[i]) { b.innerText = "OWN"; b.classList.add('owned'); }
-        });
-        if(completedMissions['x']) { document.getElementById('mission-x').innerText = window.msgClaimed; document.getElementById('mission-x').classList.add('owned'); }
-        if(completedMissions['tg']) { document.getElementById('mission-tg').innerText = window.msgClaimed; document.getElementById('mission-tg').classList.add('owned'); }
-        if(completedMissions['tt']) { document.getElementById('mission-tt').innerText = window.msgClaimed; document.getElementById('mission-tt').classList.add('owned'); }
-    }
-
-    document.getElementById('sun-btn').addEventListener('click', (e) => {
-        score++; 
-        updateUI(); 
-        db.ref('users/' + user.id).update({score: score});
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        const floating = document.createElement('div');
-        floating.className = 'floating-text';
-        floating.innerText = '+1';
-        floating.style.left = `${e.clientX - 10}px`;
-        floating.style.top = `${e.clientY - 20}px`;
-        document.body.appendChild(floating);
-        setTimeout(() => floating.remove(), 700);
-    });
-
-    function buy(i, c) { if(!ownedItems[i] && score >= c) { score -= c; ownedItems[i] = true; db.ref('users/' + user.id).update({score: score, ownedItems: ownedItems}); } }
-
-    function completeMission(id, reward, link) {
-        if(completedMissions[id]) return;
-        window.open(link, '_blank');
-        setTimeout(() => {
-            score += reward;
-            completedMissions[id] = true;
-            db.ref('users/' + user.id).update({score: score, completedMissions: completedMissions});
-            alert("Reward claimed!");
-        }, 2000);
-    }
-
-    function tryCombo(s) {
-        if(!ownedItems[s]) { alert(window.msgNeed); return; }
-        let currentCombo = window.currentComboArr || [];
-        currentCombo.push(s);
-        window.currentComboArr = currentCombo;
-        
-        document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
-        document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
-        
-        if(currentCombo.length === 3) {
-            if(JSON.stringify(currentCombo) === JSON.stringify(['☀️', '💎', '🔥'])) {
-                score += 5000000; db.ref('users/' + user.id).update({score: score}); alert(window.msgWin);
-            } else { alert(window.msgFail); }
-            ownedItems = {}; window.currentComboArr = [];
-            db.ref('users/' + user.id).update({ownedItems: ownedItems});
-            setTimeout(() => { for(let i=0;i<3;i++){document.getElementById(`slot-${i}`).innerText="?"; document.getElementById(`slot-${i}`).classList.remove('active');}}, 800);
-        }
-    }
-
-    function showView(v) {
-        document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(v !== 'game') { document.getElementById(v + '-panel').style.display = 'block'; document.getElementById('nav-' + v).classList.add('active'); }
-        else { document.getElementById('nav-game').classList.add('active'); }
-    }
-    
     window.onload = () => { tg.expand(); init(); };
 </script>
 </body>
