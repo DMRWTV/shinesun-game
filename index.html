@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Gold - Global</title>
+    <title>ShineSun Gold - Europe Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -106,7 +106,15 @@
         en: { play: "Play", rank: "Rank/Tasks", up: "Upgrades", buy: "Buy to use", win: "WINNER! +5M", fail: "WRONG! Items lost.", need: "Buy it first!", combo: "DAILY COMBO ???", miss: "Missions" },
         fr: { play: "Jouer", rank: "Classement/Missions", up: "Boosts", buy: "Acheter pour utiliser", win: "GAGNÉ ! +5M", fail: "FAUX ! Objets perdus.", need: "Achetez-le d'abord !", combo: "COMBO DU JOUR ???", miss: "Missions" },
         es: { play: "Jugar", rank: "Ranking/Tareas", up: "Mejoras", buy: "Comprar para usar", win: "¡GANASTE! +5M", fail: "¡ERROR! Objetos perdidos.", need: "¡Cómpralo primero!", combo: "COMBO DIARIO ???", miss: "Misiones" },
-        // ... (Les autres langues sont incluses dans le code mais raccourcies ici pour la lecture)
+        pt: { play: "Jogar", rank: "Ranking/Missões", up: "Melhorias", buy: "Comprar para usar", win: "GANHOU! +5M", fail: "ERRO! Itens perdidos.", need: "Compre primeiro!", combo: "COMBO DIÁRIO ???", miss: "Missões" },
+        it: { play: "Gioca", rank: "Classifica/Missioni", up: "Potenziamenti", buy: "Compra per usare", win: "VINTO! +5M", fail: "ERRORE! Oggetti persi.", need: "Compralo prima!", combo: "COMBO GIORNALIERO ???", miss: "Missioni" },
+        de: { play: "Spielen", rank: "Ranking/Aufgaben", up: "Upgrades", buy: "Kaufen zum Benutzen", win: "GEWONNEN! +5M", fail: "FALSCH! Items weg.", need: "Zuerst kaufen!", combo: "TÄGLICHER COMBO ???", miss: "Aufgaben" },
+        sq: { play: "Luaj", rank: "Renditja/Misionet", up: "Përmirësime", buy: "Bli për të përdorur", win: "FITORE! +5M", fail: "GABIM! Humbët sendet.", need: "Blije së pari!", combo: "KOMBO DITOR ???", miss: "Misionet" },
+        tr: { play: "Oyna", rank: "Sıralama/Görevler", up: "Yükseltme", buy: "Kullanmak için al", win: "KAZANDIN! +5M", fail: "YANLIŞ! Eşyalar gitti.", need: "Önce satın al!", combo: "GÜNLÜK KOMBO ???", miss: "Görevler" },
+        zh: { play: "开始游戏", rank: "排行榜/任务", up: "升级", buy: "购买后使用", win: "获胜！+5M", fail: "错误！物品丢失。", need: "先购买！", combo: "每日组合 ???", miss: "任务" },
+        ja: { play: "プレイ", rank: "ランク/ミッション", up: "アップグレード", buy: "購入して使用", win: "勝利！+5M", fail: "失敗！アイテム紛失。", need: "まず購入してください！", combo: "デイリーコンボ ???", miss: "ミッション" },
+        pl: { play: "Graj", rank: "Ranking/Misje", up: "Ulepszenia", buy: "Kup, aby użyć", win: "WYGRANA! +5M", fail: "BŁĄD! Przedmioty stracone.", need: "Kup najpierw!", combo: "DZIENNE COMBO ???", miss: "Misje" },
+        ru: { play: "Играть", rank: "Рейтинг/Задания", up: "Улучшения", buy: "Купить для игры", win: "ПОБЕДА! +5M", fail: "ОШИБКА! Вещи потеряны.", need: "Сначала купите!", combo: "КОМБО ДНЯ ???", miss: "Задания" }
     };
 
     function changeLanguage(lang) {
@@ -118,6 +126,9 @@
         document.getElementById('t-combo-text').innerText = t.combo;
         document.getElementById('t-lead-head').innerText = t.rank.split('/')[0];
         document.getElementById('t-boost-head').innerText = t.up;
+        document.getElementById('t-up-1').innerText = t.buy;
+        document.getElementById('t-up-2').innerText = t.buy;
+        document.getElementById('t-up-3').innerText = t.buy;
         window.msgWin = t.win; window.msgFail = t.fail; window.msgNeed = t.need;
     }
 
@@ -125,7 +136,7 @@
         apiKey: "AIzaSyAHGs4Lcd-KefevIcsum5BwBHM9zimso0c",
         authDomain: "shinesungame.firebaseapp.com",
         projectId: "shinesungame",
-        databaseURL: "https://shinesungame-default-rtdb.firebaseio.com",
+        databaseURL: "https://shinesungame-default-rtdb.europe-west1.firebasedatabase.app/",
         storageBucket: "shinesungame.firebasestorage.app",
         messagingSenderId: "716211150472",
         appId: "1:716211150472:web:ad27a69f590a9c7bfb893d"
@@ -133,7 +144,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const tg = window.Telegram.WebApp;
-    let user = tg.initDataUnsafe.user || { id: "test", first_name: "Explorer" };
+    let user = tg.initDataUnsafe.user || { id: "test_dev", first_name: "Explorer" };
     let score = 0; let ownedItems = {}; let currentCombo = []; let lastDate = "";
     const target = ['☀️', '💎', '🔥'];
 
@@ -152,9 +163,9 @@
             let html = ''; let players = [];
             snap.forEach(child => { players.push(child.val()); });
             players.reverse().forEach((p, i) => {
-                html += `<div class="leader-row"><span class="rank-num">#${i+1}</span> <span>${p.name}</span> <span style="color:gold">${Math.floor(p.score).toLocaleString()}</span></div>`;
+                html += `<div class="leader-row"><span class="rank-num">#${i+1}</span> <span>${p.name || 'Player'}</span> <span style="color:gold">${Math.floor(p.score).toLocaleString()}</span></div>`;
             });
-            document.getElementById('leader-list').innerHTML = html;
+            document.getElementById('leader-list').innerHTML = html || 'No data';
         });
     }
 
@@ -167,12 +178,14 @@
         });
     }
 
-    document.getElementById('sun-btn').onclick = () => { score++; db.ref('users/' + user.id).update({score: score}); };
+    document.getElementById('sun-btn').onclick = () => { score++; updateUI(); db.ref('users/' + user.id).update({score: score}); };
 
     function buy(item, cost) {
-        if(ownedItems[item] || score < cost) return;
-        score -= cost; ownedItems[item] = true;
-        db.ref('users/' + user.id).update({score: score, ownedItems: ownedItems});
+        if(ownedItems[item]) return;
+        if(score >= cost) {
+            score -= cost; ownedItems[item] = true;
+            db.ref('users/' + user.id).update({score: score, ownedItems: ownedItems});
+        }
     }
 
     function completeMission(reward) {
