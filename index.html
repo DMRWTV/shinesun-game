@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun - Gold Edition</title>
+    <title>ShineSun - Tap to Earn</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
@@ -21,166 +21,303 @@
 
         .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
 
-        /* Combo Header */
-        .combo-container {
-            display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;
-        }
+        /* Stats & Combo Header */
+        .header-info { text-align: center; margin-bottom: 10px; }
+        .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
         .combo-slot {
-            width: 60px; height: 60px; background: #222; border: 2px dashed #444;
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+            width: 50px; height: 50px; background: #222; border: 2px dashed #444;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-        .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); }
+        .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; }
 
-        /* Stats */
-        .main-score { font-size: 45px; font-weight: 900; text-align: center; color: white; margin: 10px 0; }
+        .main-score { font-size: 42px; font-weight: 900; text-align: center; margin: 5px 0; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
 
-        /* Sun Button */
+        /* Game Area */
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         .sun-main {
             width: 220px; height: 220px; background: var(--sun-gradient);
             border-radius: 50%; box-shadow: 0 0 60px rgba(255, 140, 0, 0.4);
             cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1);
+            z-index: 10;
         }
-        .sun-main:active { transform: scale(0.9); }
+        .sun-main:active { transform: scale(0.92); }
 
-        /* Navigation */
+        /* Navigation Basse */
         .footer-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: #151515; border-top: 1px solid #333;
-            display: flex; justify-content: space-around; padding: 15px 0;
+            display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
         }
-        .nav-btn { color: #666; font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-btn.active { color: var(--text-gold); }
+        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-decoration: none; }
+        .nav-btn.active { color: var(--text-gold); font-weight: bold; }
 
-        /* Views */
+        /* Panels (Missions & Boosts) */
         .view-panel {
-            position: fixed; top: 0; left: 0; width: 100%; height: 90%;
-            background: var(--bg-color); z-index: 200; display: none; padding: 20px; box-sizing: border-box;
+            position: fixed; top: 0; left: 0; width: 100%; height: 90vh;
+            background: var(--bg-color); z-index: 500; display: none; padding: 20px; 
+            box-sizing: border-box; overflow-y: auto; padding-bottom: 100px;
         }
         .card-item {
-            background: var(--card-bg); padding: 15px; border-radius: 16px; 
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); padding: 16px; border-radius: 16px; 
+            margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
+            border: 1px solid #2c2c2e;
         }
-        .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; }
+        .card-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .btn-action { background: var(--text-gold); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
+        
+        /* Inputs Missions */
+        .verify-box { display: flex; gap: 5px; width: 100%; margin-top: 5px; }
+        .input-pseudo { background: #000; border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; flex-grow: 1; outline: none; }
 
-        .plus-one { position: absolute; color: white; font-weight: bold; font-size: 24px; animation: fly 0.7s forwards; pointer-events: none; }
-        @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        /* Animations Clic */
+        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 28px; animation: fly 0.7s forwards; pointer-events: none; z-index: 100; }
+        @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div style="text-align: center; font-size: 12px; color: #888; margin-bottom: 5px;">COMBO QUOTIDIEN (+5M $SHINE)</div>
-    <div class="combo-container" id="combo-display">
-        <div class="combo-slot" id="slot-0">?</div>
-        <div class="combo-slot" id="slot-1">?</div>
-        <div class="combo-slot" id="slot-2">?</div>
+<div class="app-container" id="game-view">
+    <div class="header-info">
+        <div style="font-size: 11px; color: #888;">COMBO QUOTIDIEN (+5,000,000 $SHINE)</div>
+        <div class="combo-container">
+            <div class="combo-slot" id="slot-0">?</div>
+            <div class="combo-slot" id="slot-1">?</div>
+            <div class="combo-slot" id="slot-2">?</div>
+        </div>
     </div>
 
-    <div class="main-score" id="score">0</div>
-    
+    <div class="main-score" id="score-display">0</div>
+    <div style="text-align: center; color: #888; font-size: 12px; margin-bottom: 10px;" id="level-name">🌞 ÉTINCELLE NOVICE</div>
+
     <div class="game-area">
         <div class="sun-main" id="sun-btn"></div>
     </div>
 
-    <div style="margin-bottom: 80px;">
-        <div id="energy-text" style="font-size: 14px;">⚡ 1000 / 1000</div>
+    <div style="margin-bottom: 70px;">
+        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span>⚡ Énergie</span>
+            <span id="energy-val">1000/1000</span>
+        </div>
         <div style="width: 100%; height: 10px; background: #333; border-radius: 10px; margin-top: 5px;">
-            <div id="energy-bar" style="width: 100%; height: 100%; background: var(--sun-gradient); border-radius: 10px;"></div>
+            <div id="energy-bar" style="width: 100%; height: 100%; background: var(--sun-gradient); border-radius: 10px; transition: width 0.2s;"></div>
         </div>
     </div>
 </div>
 
-<div id="shop-panel" class="view-panel">
-    <h2 style="color: var(--text-gold);">Améliorations & Combo</h2>
+<div id="mission-panel" class="view-panel">
+    <h2 style="color: var(--text-gold);">Missions Virales 🚀</h2>
+    <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Fais briller le projet et accumule des millions !</p>
+    
+    <div class="card-item">
+        <div class="card-row">
+            <div><b>Suivre sur X</b><br><small>+3,000 $SHINE</small></div>
+            <button class="btn-action" onclick="doMission('x', 3000, 'https://x.com/TON_COMPTE')">GO</button>
+        </div>
+    </div>
+
+    <div class="card-item">
+        <div class="card-row">
+            <div><b>Partager en Story Instagram</b><br><small>+20,000 $SHINE</small></div>
+            <button class="btn-action" onclick="openStory('ig')">PARTAGER</button>
+        </div>
+        <div id="verify-ig" style="display:none;">
+            <div class="verify-box">
+                <input type="text" id="user-ig" class="input-pseudo" placeholder="@TonPseudo">
+                <button class="btn-action" onclick="verifyStory('ig', 20000)">VÉRIFIER</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-item">
+        <div class="card-row">
+            <div><b>Partager en Story TikTok</b><br><small>+25,000 $SHINE</small></div>
+            <button class="btn-action" onclick="openStory('tk')">PARTAGER</button>
+        </div>
+        <div id="verify-tk" style="display:none;">
+            <div class="verify-box">
+                <input type="text" id="user-tk" class="input-pseudo" placeholder="@TonPseudo">
+                <button class="btn-action" onclick="verifyStory('tk', 25000)">VÉRIFIER</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-item">
+        <div class="card-row">
+            <div><b>Rejoindre Telegram</b><br><small>+5,000 $SHINE</small></div>
+            <button class="btn-action" onclick="doMission('tg', 5000, 'https://t.me/TON_CANAL')">REJOINDRE</button>
+        </div>
+    </div>
+</div>
+
+<div id="boost-panel" class="view-panel">
+    <h2 style="color: var(--text-gold);">Boutique & Boosts 💰</h2>
+    <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Utilise les cartes pour le combo du jour !</p>
+    
     <div class="card-item" onclick="tryCombo('☀️')">
-        <div><b>Panneau Solaire</b><br><small>Revenu passif +10/h</small></div>
-        <button class="btn-action">1k</button>
+        <div class="card-row">
+            <div><b>Panneau Solaire</b><br><small>Passif: +10/h | Coût: 1,000</small></div>
+            <button class="btn-action" onclick="buyBoost('auto', 1000, 10)">ACHETER</button>
+        </div>
     </div>
     <div class="card-item" onclick="tryCombo('🚀')">
-        <div><b>Fusée Shine</b><br><small>Revenu passif +50/h</small></div>
-        <button class="btn-action">5k</button>
+        <div class="card-row">
+            <div><b>Fusée Shine</b><br><small>Passif: +50/h | Coût: 5,000</small></div>
+            <button class="btn-action" onclick="buyBoost('auto', 5000, 50)">ACHETER</button>
+        </div>
     </div>
     <div class="card-item" onclick="tryCombo('💎')">
-        <div><b>Cristal de Feu</b><br><small>Revenu passif +100/h</small></div>
-        <button class="btn-action">10k</button>
+        <div class="card-row">
+            <div><b>Cristal de Feu</b><br><small>Passif: +100/h | Coût: 10,000</small></div>
+            <button class="btn-action" onclick="buyBoost('auto', 10000, 100)">ACHETER</button>
+        </div>
     </div>
     <div class="card-item" onclick="tryCombo('🔥')">
-        <div><b>Fusion Nucléaire</b><br><small>Revenu passif +500/h</small></div>
-        <button class="btn-action">50k</button>
+        <div class="card-row">
+            <div><b>Fusion Nucléaire</b><br><small>Passif: +500/h | Coût: 50,000</small></div>
+            <button class="btn-action" onclick="buyBoost('auto', 50000, 500)">ACHETER</button>
+        </div>
     </div>
-    <button onclick="closePanel()" style="width:100%; padding:15px; background:none; color:white; border:1px solid #444; border-radius:12px;">Retour</button>
 </div>
 
 <div class="footer-nav">
-    <div class="nav-btn active" onclick="closePanel()">🏠<br>Jeu</div>
-    <div class="nav-btn" onclick="openPanel()">💰<br>Boutique</div>
-    <div class="nav-btn" onclick="alert('Missions bientôt !')">🚀<br>Missions</div>
+    <div class="nav-btn active" id="nav-home" onclick="showView('game')">🏠<br>Home</div>
+    <div class="nav-btn" id="nav-miss" onclick="showView('mission')">🚀<br>Missions</div>
+    <div class="nav-btn" id="nav-boost" onclick="showView('boost')">💰<br>Boosts</div>
 </div>
 
 <script>
     let score = parseInt(localStorage.getItem('sh_score')) || 0;
     let energy = 1000;
+    let clickVal = 1;
+    let passive = 0;
     let currentCombo = [];
-    const targetCombo = ['☀️', '💎', '🔥']; // La solution du jour !
+    const targetCombo = ['☀️', '💎', '🔥']; // Changez cet ordre pour changer le combo du jour
 
     function updateUI() {
-        document.getElementById('score').innerText = score.toLocaleString();
+        document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
         document.getElementById('energy-bar').style.width = (energy / 10) + "%";
-        document.getElementById('energy-text').innerText = `⚡ ${energy} / 1000`;
+        document.getElementById('energy-val').innerText = `${energy}/1000`;
+        
+        const lvl = document.getElementById('level-name');
+        if(score > 1000000) lvl.innerText = "👑 EMPEREUR SOLAIRE";
+        else if(score > 100000) lvl.innerText = "🔥 GÉANTE ROUGE";
+        else lvl.innerText = "🌞 ÉTINCELLE NOVICE";
     }
 
+    // Gestion du Clic
     document.getElementById('sun-btn').addEventListener('click', (e) => {
-        if(energy > 0) {
-            score += 1;
-            energy -= 1;
-            createAnim(e.clientX, e.clientY);
-            updateUI();
-            save();
+        if(energy >= clickVal) {
+            score += clickVal;
+            energy -= clickVal;
+            const x = e.clientX; const y = e.clientY;
+            const d = document.createElement('div');
+            d.className = 'plus-one'; d.style.left = x+'px'; d.style.top = y+'px';
+            d.innerText = "+"+clickVal; document.body.appendChild(d);
+            setTimeout(() => d.remove(), 700);
+            if(window.Telegram.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            updateUI(); save();
         }
     });
 
-    function createAnim(x, y) {
-        const div = document.createElement('div');
-        div.className = 'plus-one';
-        div.style.left = x + 'px'; div.style.top = y + 'px';
-        div.innerText = "+1";
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 700);
+    // Navigation
+    function showView(v) {
+        document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(v === 'mission') {
+            document.getElementById('mission-panel').style.display = 'block';
+            document.getElementById('nav-miss').classList.add('active');
+        } else if(v === 'boost') {
+            document.getElementById('boost-panel').style.display = 'block';
+            document.getElementById('nav-boost').classList.add('active');
+        } else {
+            document.getElementById('nav-home').classList.add('active');
+        }
     }
 
-    // Logique du Combo
-    function tryCombo(symbole) {
+    // Missions Story
+    function openStory(plat) {
+        let link = plat === 'ig' ? 'https://instagram.com/' : 'https://www.tiktok.com/';
+        window.open(link, '_blank');
+        document.getElementById('verify-' + plat).style.display = 'block';
+    }
+
+    function verifyStory(plat, rew) {
+        let pseudo = document.getElementById('user-' + plat).value;
+        if(pseudo.length < 3) { alert("Entre un pseudo valide !"); return; }
+        
+        if(!localStorage.getItem('m_st_'+plat)) {
+            let btn = event.target;
+            btn.innerText = "...";
+            setTimeout(() => {
+                score += rew;
+                localStorage.setItem('m_st_'+plat, 'true');
+                updateUI(); save();
+                alert("Vérification réussie ! Points ajoutés.");
+                document.getElementById('verify-' + plat).innerHTML = "✅ Validé pour " + pseudo;
+            }, 2000);
+        }
+    }
+
+    function doMission(id, rew, link) {
+        if(!localStorage.getItem('m_'+id)) {
+            score += rew;
+            localStorage.setItem('m_'+id, 'true');
+            window.open(link, '_blank');
+            updateUI(); save();
+            alert("Récompense Shine ajoutée !");
+        }
+    }
+
+    function buyBoost(type, cost, power) {
+        if(score >= cost) {
+            score -= cost;
+            passive += (power / 3600);
+            updateUI(); save();
+        } else { alert("Pas assez de points !"); }
+    }
+
+    // Combo
+    function tryCombo(s) {
         if(currentCombo.length < 3) {
-            currentCombo.push(symbole);
-            document.getElementById(`slot-${currentCombo.length-1}`).innerText = symbole;
+            currentCombo.push(s);
+            document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
             document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
-            
             if(currentCombo.length === 3) {
                 if(JSON.stringify(currentCombo) === JSON.stringify(targetCombo)) {
                     score += 5000000;
-                    alert("☀️ COMBO GAGNÉ ! +5,000,000 $SHINE");
+                    alert("☀️ COMBO GAGNÉ ! +5M $SHINE");
                 } else {
-                    alert("Raté ! Réessaie demain.");
-                    currentCombo = [];
-                    setTimeout(() => {
-                        for(let i=0; i<3; i++) {
-                            document.getElementById(`slot-${i}`).innerText = "?";
-                            document.getElementById(`slot-${i}`).classList.remove('active');
-                        }
-                    }, 1000);
+                    alert("Mauvais combo ! Réessaie demain.");
+                    resetCombo();
                 }
             }
         }
     }
 
-    function openPanel() { document.getElementById('shop-panel').style.display = 'block'; }
-    function closePanel() { document.getElementById('shop-panel').style.display = 'none'; }
-    function save() { localStorage.setItem('sh_score', score); }
+    function resetCombo() {
+        currentCombo = [];
+        setTimeout(() => {
+            for(let i=0; i<3; i++) {
+                document.getElementById(`slot-${i}`).innerText = "?";
+                document.getElementById(`slot-${i}`).classList.remove('active');
+            }
+        }, 1000);
+    }
 
-    setInterval(() => { if(energy < 1000) energy++; updateUI(); }, 1500);
-    updateUI();
+    // Boucle de mise à jour (Énergie + Passif)
+    setInterval(() => {
+        if(energy < 1000) energy++;
+        if(passive > 0) score += passive;
+        updateUI(); save();
+    }, 1000);
+
+    function save() {
+        localStorage.setItem('sh_score', score);
+    }
+
+    window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
+    updateUI();
 </script>
 </body>
 </html>
