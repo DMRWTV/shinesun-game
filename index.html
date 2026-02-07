@@ -28,6 +28,8 @@
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-btn { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; }
         .nav-btn.active { color: var(--sun-main); }
+        /* Support for Arabic (RTL) */
+        body.lang-ar { direction: rtl; }
     </style>
 </head>
 <body>
@@ -45,19 +47,19 @@
 </div>
 
 <div id="leader-panel" class="view-panel">
-    <h2 id="txt-friends-title" style="color: var(--sun-main);">Friends & Ranking</h2>
+    <h2 id="txt-friends-title" style="color: var(--sun-main);">Friends</h2>
     <div style="background: #1a1a1a; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #333;">
-        <div id="txt-invite-msg" style="font-size: 14px; font-weight: bold; margin-bottom: 15px;">Invite friends & earn 50k $SHINE</div>
-        <button id="txt-btn-invite" class="btn-invite-main" onclick="shareTelegram()">INVITE A FRIEND 👤</button>
+        <div id="txt-invite-msg" style="font-size: 14px; font-weight: bold; margin-bottom: 15px;">Invite friends & earn 50k</div>
+        <button id="txt-btn-invite" class="btn-invite-main" onclick="shareTelegram()">INVITE 👤</button>
     </div>
-    <h3 id="txt-leader-title" style="color: var(--sun-main);">Top 10 Players</h3>
-    <div id="leader-list" style="background:#111; border-radius:15px; padding:10px; margin-bottom:20px;">Loading...</div>
+    <h3 id="txt-leader-title" style="color: var(--sun-main);">Top 10</h3>
+    <div id="leader-list" style="background:#111; border-radius:15px; padding:10px; margin-bottom:20px;"></div>
     <h3 id="txt-mission-title">Missions</h3>
     <div id="missions-container"></div>
 </div>
 
 <div id="boost-panel" class="view-panel">
-    <h2 id="txt-shop-title" style="color: var(--sun-main);">Upgrades Shop</h2>
+    <h2 id="txt-shop-title" style="color: var(--sun-main);">Shop</h2>
     <div id="shop-list"></div>
 </div>
 
@@ -68,32 +70,21 @@
 </div>
 
 <script>
-    // --- TRANSLATIONS ---
     const i18n = {
-        en: {
-            combo: "DAILY COMBO ???", play: "PLAY", friends: "FRIENDS", shop: "SHOP",
-            friends_title: "Friends & Ranking", invite_msg: "Invite friends & earn 50k $SHINE",
-            btn_invite: "INVITE A FRIEND 👤", leader_title: "Top 10 Players", missions: "Missions",
-            shop_title: "Upgrades Shop", loading: "Loading...", btn_go: "GO", btn_join: "JOIN",
-            btn_follow: "FOLLOW", btn_buy: "BUY", owned: "OWNED", alert_copy: "Link copied!",
-            share_msg: "Join me on ShineSun Gold and earn 50k $SHINE! ☀️",
-            upgrades: ["Solar Panel", "Crystal Focus", "Magma Pump", "Nuclear Core", "Solar Flare", "Galaxy Gate"]
-        },
-        fr: {
-            combo: "COMBO QUOTIDIEN ???", play: "JOUER", friends: "AMIS", shop: "BOUTIQUE",
-            friends_title: "Amis et Classement", invite_msg: "Invite des amis et gagne 50k $SHINE",
-            btn_invite: "INVITER UN AMI 👤", leader_title: "Top 10 Joueurs", missions: "Missions",
-            shop_title: "Boutique d'améliorations", loading: "Chargement...", btn_go: "C'EST PARTI", btn_join: "REJOINDRE",
-            btn_follow: "SUIVRE", btn_buy: "ACHETER", owned: "ACQUIS", alert_copy: "Lien copié !",
-            share_msg: "Rejoins-moi sur ShineSun Gold et gagne 50k $SHINE ! ☀️",
-            upgrades: ["Panneau Solaire", "Focus Cristal", "Pompe à Magma", "Noyau Nucléaire", "Éruption Solaire", "Porte Galactique"]
-        }
+        en: { combo:"DAILY COMBO", play:"PLAY", friends:"FRIENDS", shop:"SHOP", invite_msg:"Invite friends & earn 50k $SHINE", btn_invite:"INVITE 👤", leader:"Top 10", mission:"Missions", buy:"BUY", owned:"OWNED", share:"Join me on ShineSun Gold!", upgrades:["Solar Panel", "Crystal", "Magma Pump", "Nuclear", "Flare", "Galaxy"] },
+        fr: { combo:"COMBO DU JOUR", play:"JOUER", friends:"AMIS", shop:"BOUTIQUE", invite_msg:"Invite tes amis et gagne 50k $SHINE", btn_invite:"INVITER 👤", leader:"Top 10", mission:"Missions", buy:"ACHETER", owned:"ACQUIS", share:"Rejoins-moi sur ShineSun Gold !", upgrades:["Panneau Solaire", "Cristal", "Pompe Magma", "Nucléaire", "Éruption", "Galactique"] },
+        es: { combo:"COMBO DIARIO", play:"JUGAR", friends:"AMIGOS", shop:"TIENDA", invite_msg:"¡Invita amigos y gana 50k!", btn_invite:"INVITAR 👤", leader:"Top 10", mission:"Misiones", buy:"COMPRAR", owned:"PROPIO", share:"¡Únete a mí en ShineSun Gold!", upgrades:["Panel Solar", "Cristal", "Bomba Magma", "Nuclear", "Llamarada", "Galaxia"] },
+        de: { combo:"TÄGLICHER COMBO", play:"SPIELEN", friends:"FREUNDE", shop:"SHOP", invite_msg:"Freunde einladen & 50k verdienen", btn_invite:"EINLADEN 👤", leader:"Top 10", mission:"Missionen", buy:"KAUFEN", owned:"GEKAUFT", share:"Komm zu ShineSun Gold!", upgrades:["Solarpanel", "Kristall", "Magmapumpe", "Atomkern", "Flare", "Galaxie"] },
+        ru: { combo:"ДНЕВНОЕ КОМБО", play:"ИГРАТЬ", friends:"ДРУЗЬЯ", shop:"МАГАЗИН", invite_msg:"Пригласи друзей и получи 50k", btn_invite:"ПРИГЛАСИТЬ 👤", leader:"Топ 10", mission:"Задания", buy:"КУПИТЬ", owned:"КУПЛЕНО", share:"Присоединяйся к ShineSun Gold!", upgrades:["Солнечная панель", "Кристалл", "Магма насос", "Ядро", "Вспышка", "Галактика"] },
+        pt: { combo:"COMBO DIÁRIO", play:"JOGAR", friends:"AMIGOS", shop:"LOJA", invite_msg:"Convide amigos e ganhe 50k", btn_invite:"CONVIDAR 👤", leader:"Top 10", mission:"Missões", buy:"COMPRAR", owned:"ADQUIRIDO", share:"Junte-se a mim no ShineSun Gold!", upgrades:["Painel Solar", "Cristal", "Bomba Magma", "Nuclear", "Explosão", "Galáxia"] },
+        it: { combo:"COMBO GIORNALIERO", play:"GIOCA", friends:"AMICI", shop:"NEGOZIO", invite_msg:"Invita amici e guadagna 50k", btn_invite:"INVITA 👤", leader:"Top 10", mission:"Missioni", buy:"COMPRA", owned:"ACQUISTATO", share:"Unisciti a me su ShineSun Gold!", upgrades:["Pannello Solare", "Cristallo", "Pompa Magma", "Nucleare", "Flare", "Galassia"] },
+        ar: { combo:"كومبو اليوم", play:"لعب", friends:"أصدقاء", shop:"متجر", invite_msg:"ادعُ الأصدقاء واربح 50 ألف", btn_invite:"دعوة 👤", leader:"أفضل 10", mission:"مهام", buy:"شراء", owned:"تم الشراء", share:"انضم إلي في ShineSun Gold!", upgrades:["لوحة شمسية", "كريستال", "مضخة ماغما", "نووي", "توهج", "مجرة"] }
     };
 
-    const lang = (window.navigator.language || 'en').split('-')[0];
-    const texts = i18n[lang] || i18n.en;
+    const userLang = (window.navigator.language || 'en').split('-')[0];
+    const texts = i18n[userLang] || i18n.en;
+    if(userLang === 'ar') document.body.classList.add('lang-ar');
 
-    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyAHGs4Lcd-KefevIcsum5BwBHM9zimso0c",
         authDomain: "shinesungame.firebaseapp.com",
@@ -107,46 +98,40 @@
     const db = firebase.database();
     const tg = window.Telegram.WebApp;
     
-    let user = tg.initDataUnsafe.user || { id: "test_user", first_name: "Player" };
+    let user = tg.initDataUnsafe.user || { id: "dev_user", first_name: "Player" };
     let score = 0, energy = 1000, ownedItems = {}, completedMissions = {};
     
     const upgrades = [
-        {id:'u1', boost:2, price:1000, icon:'☀️'},
-        {id:'u2', boost:5, price:5000, icon:'💎'},
-        {id:'u3', boost:10, price:15000, icon:'🌋'},
-        {id:'u4', boost:25, price:50000, icon:'🔥'},
-        {id:'u5', boost:60, price:150000, icon:'💥'},
-        {id:'u6', boost:150, price:500000, icon:'🌌'}
+        {id:'u1', boost:2, price:1000, icon:'☀️'}, {id:'u2', boost:5, price:5000, icon:'💎'},
+        {id:'u3', boost:10, price:15000, icon:'🌋'}, {id:'u4', boost:25, price:50000, icon:'🔥'},
+        {id:'u5', boost:60, price:150000, icon:'💥'}, {id:'u6', boost:150, price:500000, icon:'🌌'}
     ];
 
-    function applyTranslations() {
+    function applyLang() {
         document.getElementById('txt-combo').innerText = texts.combo;
         document.getElementById('txt-nav-play').innerText = texts.play;
         document.getElementById('txt-nav-friends').innerText = texts.friends;
         document.getElementById('txt-nav-shop').innerText = texts.shop;
-        document.getElementById('txt-friends-title').innerText = texts.friends_title;
+        document.getElementById('txt-friends-title').innerText = texts.friends;
         document.getElementById('txt-invite-msg').innerText = texts.invite_msg;
         document.getElementById('txt-btn-invite').innerText = texts.btn_invite;
-        document.getElementById('txt-leader-title').innerText = texts.leader_title;
-        document.getElementById('txt-mission-title').innerText = texts.missions;
-        document.getElementById('txt-shop-title').innerText = texts.shop_title;
+        document.getElementById('txt-leader-title').innerText = texts.leader;
+        document.getElementById('txt-mission-title').innerText = texts.mission;
+        document.getElementById('txt-shop-title').innerText = texts.shop;
         
-        const missionsHTML = `
-            <div class="card-item"><div><b>TikTok</b><br><small>+20k</small></div><button class="btn-buy" onclick="completeMission('tt',20000,'https://tiktok.com/@shinesungold')">${texts.btn_go}</button></div>
-            <div class="card-item"><div><b>Telegram</b><br><small>+15k</small></div><button class="btn-buy" onclick="completeMission('tg',15000,'https://t.me/shinesun_gold')">${texts.btn_join}</button></div>
-            <div class="card-item"><div><b>X (Twitter)</b><br><small>+10k</small></div><button class="btn-buy" onclick="completeMission('x',10000,'https://x.com/shinesun_gold')">${texts.btn_follow}</button></div>
-        `;
-        document.getElementById('missions-container').innerHTML = missionsHTML;
+        document.getElementById('missions-container').innerHTML = `
+            <div class="card-item"><div><b>TikTok</b></div><button class="btn-buy" onclick="completeMission('tt',20000,'https://tiktok.com/@shinesungold')">GO</button></div>
+            <div class="card-item"><div><b>Telegram</b></div><button class="btn-buy" onclick="completeMission('tg',15000,'https://t.me/shinesun_gold')">JOIN</button></div>
+            <div class="card-item"><div><b>X (Twitter)</b></div><button class="btn-buy" onclick="completeMission('x',10000,'https://x.com/shinesun_gold')">X</button></div>`;
     }
 
     function init() {
-        applyTranslations();
+        applyLang();
         db.ref('users/' + user.id).on('value', (snap) => {
             const d = snap.val() || {};
             score = d.score || 0; ownedItems = d.ownedItems || {}; completedMissions = d.completedMissions || {};
             renderShop(); updateUI();
         });
-
         const startParam = tg.initDataUnsafe.start_param;
         if (startParam && startParam !== user.id.toString()) {
             db.ref('referrals/' + user.id).once('value', (s) => {
@@ -162,7 +147,7 @@
 
     function shareTelegram() {
         const link = `https://t.me/shinesungame_bot?start=${user.id}`;
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(texts.share_msg)}`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(texts.share)}`;
         tg.openTelegramLink(shareUrl);
     }
 
@@ -173,28 +158,26 @@
             users.reverse().forEach((u, i) => {
                 html += `<div class="leader-row"><span>#${i+1} ${u.name}</span><b>${Math.floor(u.score).toLocaleString()}</b></div>`;
             });
-            document.getElementById('leader-list').innerHTML = html || "No data";
+            document.getElementById('leader-list').innerHTML = html;
         });
     }
 
     function renderShop() {
         let h = ''; upgrades.forEach((u, i) => {
             const owned = ownedItems[u.id];
-            h += `<div class="card-item"><div><b>${u.icon} ${texts.upgrades[i]}</b><br><small>+${u.boost}/clic</small></div>
+            h += `<div class="card-item"><div><b>${u.icon} ${texts.upgrades[i]}</b><br><small>+${u.boost}</small></div>
             <button class="btn-buy ${owned?'owned':''}" onclick="buy('${u.id}',${u.price})">${owned?texts.owned:u.price.toLocaleString()}</button></div>`;
         });
         document.getElementById('shop-list').innerHTML = h;
     }
 
     function buy(id, p) { if(score >= p && !ownedItems[id]) { score -= p; ownedItems[id] = true; save(); } }
-
     document.getElementById('sun-btn').onclick = (e) => {
         if(energy < 1) return;
         let tap = 1; upgrades.forEach(u => { if(ownedItems[u.id]) tap += u.boost; });
         score += tap; energy -= 1; updateEnergyUI(); save();
         showPop(e, tap); tg.HapticFeedback.impactOccurred('medium');
     };
-
     function save() { db.ref('users/' + user.id).update({score, ownedItems, completedMissions, name: user.first_name}); }
     function completeMission(id, r, l) { window.open(l, '_blank'); setTimeout(() => { if(!completedMissions[id]) { score += r; completedMissions[id] = true; save(); }}, 3000); }
     function showView(v) { document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none'); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); if(v !== 'game') document.getElementById(v + '-panel').style.display = 'block'; document.getElementById('nav-' + v).classList.add('active'); }
