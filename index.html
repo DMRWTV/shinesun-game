@@ -3,156 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun Pro</title>
+    <title>ShineSun - Tap to Earn</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); --bg-color: #0f0f0f; }
-        body { background-color: var(--bg-color); color: white; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; user-select: none; }
-        
-        /* Layout */
-        .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
-        
-        /* Top Stats */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: #1e1e1e; padding: 10px; border-radius: 12px; border: 1px solid #333; }
-        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
-        .stat-value { font-size: 16px; font-weight: bold; color: #FFD700; }
+        :root { 
+            --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); 
+            --bg-color: #0b0b0b;
+            --card-bg: #1c1c1e;
+            --text-gold: #FFD700;
+        }
 
-        /* Score & Level */
-        .main-score { font-size: 48px; font-weight: 800; margin: 10px 0; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
-        .level-badge { background: #333; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-bottom: 30px; display: inline-block; }
+        body { 
+            background-color: var(--bg-color); 
+            color: white; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            margin: 0; padding: 0; 
+            user-select: none;
+            overflow: hidden;
+        }
 
-        /* The Sun (Game Area) */
-        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        /* Container Principal */
+        .app-container { 
+            display: flex; flex-direction: column; 
+            height: 100vh; padding: 20px; 
+            box-sizing: border-box; 
+            justify-content: space-between;
+        }
+
+        /* Dashboard Stats */
+        .top-nav {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-bottom: 20px;
+        }
+        .stat-box {
+            background: var(--card-bg);
+            padding: 8px; border-radius: 12px;
+            text-align: center; border: 1px solid #333;
+        }
+        .stat-label { font-size: 9px; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+        .stat-val { font-size: 13px; font-weight: bold; color: var(--text-gold); }
+
+        /* Score Principal */
+        .score-section { text-align: center; margin-top: 10px; }
+        .main-score { 
+            font-size: 52px; font-weight: 900; 
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+        .level-name { color: #888; font-size: 14px; margin-top: 5px; letter-spacing: 1px; }
+
+        /* Cercle de Jeu */
+        .game-area {
+            position: relative; display: flex; 
+            justify-content: center; align-items: center;
+            flex-grow: 1;
+        }
+        .sun-outer {
+            width: 280px; height: 280px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
+        }
         .sun-main {
-            width: 250px; height: 250px;
+            width: 240px; height: 240px;
             background: var(--sun-gradient);
             border-radius: 50%;
-            box-shadow: 0 0 60px rgba(255, 140, 0, 0.5);
-            border: 8px solid rgba(255,255,255,0.1);
-            cursor: pointer; transition: transform 0.05s;
-            z-index: 2;
+            box-shadow: 0 0 80px rgba(255, 140, 0, 0.4);
+            cursor: pointer; transition: transform 0.05s ease-in-out;
+            border: 10px solid rgba(255,255,255,0.1);
+            z-index: 5;
         }
-        .sun-main:active { transform: scale(0.95); }
+        .sun-main:active { transform: scale(0.92); }
 
-        /* Energy Bar */
-        .energy-container { width: 100%; background: #333; height: 12px; border-radius: 10px; margin-top: 20px; overflow: hidden; }
-        #energy-fill { background: var(--sun-gradient); width: 100%; height: 100%; transition: width 0.2s; }
+        /* Energie */
+        .energy-wrapper { margin-bottom: 80px; }
+        .energy-bar-bg {
+            width: 100%; height: 14px; background: #222;
+            border-radius: 10px; overflow: hidden; margin-top: 8px;
+        }
+        .energy-fill {
+            height: 100%; background: var(--sun-gradient);
+            width: 100%; transition: width 0.3s ease;
+        }
 
-        /* Navigation / Sections */
-        .nav-tabs { display: flex; justify-content: space-around; background: #1a1a1a; padding: 15px; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; }
-        .nav-item { color: #888; font-size: 12px; cursor: pointer; text-align: center; }
-        .nav-item.active { color: #FFD700; font-weight: bold; }
+        /* Navigation Basse */
+        .footer-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #151515; border-top: 1px solid #333;
+            display: flex; justify-content: space-around;
+            padding: 15px 0; z-index: 100;
+        }
+        .nav-btn { color: #666; font-size: 12px; text-align: center; cursor: pointer; }
+        .nav-btn.active { color: var(--text-gold); }
 
-        /* Floating text animation */
-        .plus-one { position: absolute; color: white; font-weight: bold; font-size: 24px; pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 10; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        /* Modals (Missions & Shop) */
+        .view-panel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 200;
+            display: none; padding: 20px; box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .card-item {
+            background: var(--card-bg); padding: 15px;
+            border-radius: 16px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #2c2c2e;
+        }
+        .buy-btn {
+            background: var(--text-gold); color: black;
+            border: none; padding: 8px 16px; border-radius: 8px;
+            font-weight: bold; font-size: 12px;
+        }
+
+        /* Animation Points */
+        .floating-point {
+            position: absolute; color: white; font-size: 28px; font-weight: 800;
+            pointer-events: none; animation: flyUp 0.8s ease-out forwards; z-index: 100;
+        }
+        @keyframes flyUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">Profit par clic</div>
-            <div class="stat-value" id="profit-per-click">+1</div>
+<div class="app-container" id="main-view">
+    <div class="top-nav">
+        <div class="stat-box">
+            <div class="stat-label">Par Clic</div>
+            <div class="stat-val" id="val-per-click">+1</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Objectif Palier</div>
-            <div class="stat-value">1M</div>
+        <div class="stat-box">
+            <div class="stat-label">Limite</div>
+            <div class="stat-val">1.5M</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Profit/H</div>
+            <div class="stat-val" id="val-per-hour">0</div>
         </div>
     </div>
 
-    <div class="main-score" id="score">0</div>
-    <div class="level-badge" id="level-name">🌞 Étincelle Novice</div>
-
-    <div class="game-area" id="game-area">
-        <div class="sun-main" id="sun-tap"></div>
+    <div class="score-section">
+        <div class="main-score" id="display-score">0</div>
+        <div class="level-name" id="display-level">🌞 NOVICE SOLAIRE</div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; font-size: 14px;">
-        <span>⚡ Énergie</span>
-        <span id="energy-text">1000 / 1000</span>
-    </div>
-    <div class="energy-container">
-        <div id="energy-fill"></div>
+    <div class="game-area">
+        <div class="sun-outer">
+            <div class="sun-main" id="sun-btn"></div>
+        </div>
     </div>
 
-    <br><br><br> </div>
+    <div class="energy-wrapper">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span id="energy-count">⚡ 1000 / 1000</span>
+            <span style="color: var(--text-gold);">Boost</span>
+        </div>
+        <div class="energy-bar-bg">
+            <div class="energy-fill" id="energy-bar"></div>
+        </div>
+    </div>
+</div>
 
-<div class="nav-tabs">
-    <div class="nav-item active">🏠 Jeu</div>
-    <div class="nav-item" onclick="alert('Missions bientôt disponibles !')">🚀 Missions</div>
-    <div class="nav-item" onclick="alert('Boutique bientôt disponible !')">💰 Boosts</div>
-    <div class="nav-item" onclick="alert('Classement bientôt disponible !')">🏆 Top</div>
+<div id="mission-panel" class="view-panel">
+    <h2 style="color: var(--text-gold);">Missions $SHINE 🚀</h2>
+    <div class="card-item">
+        <div><b>Rejoindre Telegram</b><br><small>+5,000 pts</small></div>
+        <button class="buy-btn" onclick="doMission('tg', 5000, 'https://t.me/TON_LIEN')">GO</button>
+    </div>
+    <div class="card-item">
+        <div><b>Suivre sur X</b><br><small>+3,000 pts</small></div>
+        <button class="buy-btn" onclick="doMission('x', 3000, 'https://x.com/TON_COMPTE')">GO</button>
+    </div>
+    <div class="card-item">
+        <div><b>Abonnement YouTube</b><br><small>+10,000 pts</small></div>
+        <button class="buy-btn" onclick="doMission('yt', 10000, 'https://youtube.com/TON_LIEN')">GO</button>
+    </div>
+    <button onclick="closePanel('mission-panel')" style="width:100%; background:none; border:1px solid #444; color:white; padding:15px; border-radius:12px;">Retour</button>
+</div>
+
+<div id="shop-panel" class="view-panel">
+    <h2 style="color: var(--text-gold);">Boosters 💎</h2>
+    <div class="card-item">
+        <div><b>Multitap x2</b><br><small>Prix: 2,000 pts</small></div>
+        <button class="buy-btn" onclick="buyBoost('multitap', 2000)">Acheter</button>
+    </div>
+    <div class="card-item">
+        <div><b>Auto-Shine (Passive)</b><br><small>Prix: 10,000 pts</small></div>
+        <button class="buy-btn" onclick="buyBoost('auto', 10000)">Acheter</button>
+    </div>
+    <button onclick="closePanel('shop-panel')" style="width:100%; background:none; border:1px solid #444; color:white; padding:15px; border-radius:12px;">Retour</button>
+</div>
+
+<div class="footer-nav">
+    <div class="nav-btn active" onclick="closeAllPanels()">🏠<br>Home</div>
+    <div class="nav-btn" onclick="openPanel('mission-panel')">🚀<br>Missions</div>
+    <div class="nav-btn" onclick="openPanel('shop-panel')">💰<br>Boosts</div>
+    <div class="nav-btn" onclick="alert('Classement bientôt disponible !')">🏆<br>Top</div>
 </div>
 
 <script>
-    let score = parseInt(localStorage.getItem('shineScore')) || 0;
-    let energy = parseInt(localStorage.getItem('shineEnergy')) || 1000;
+    // Variables de jeu
+    let score = parseInt(localStorage.getItem('shine_score')) || 0;
+    let energy = parseInt(localStorage.getItem('shine_energy')) || 1000;
+    let clickVal = parseInt(localStorage.getItem('shine_click')) || 1;
+    let passiveIncome = parseInt(localStorage.getItem('shine_passive')) || 0;
     const maxEnergy = 1000;
-    const clickValue = 1;
 
-    const scoreEl = document.getElementById('score');
-    const energyEl = document.getElementById('energy-fill');
-    const energyText = document.getElementById('energy-text');
-    const sunBtn = document.getElementById('sun-tap');
-    const gameArea = document.getElementById('game-area');
+    // Elements
+    const scoreEl = document.getElementById('display-score');
+    const energyBar = document.getElementById('energy-bar');
+    const energyText = document.getElementById('energy-count');
+    const sunBtn = document.getElementById('sun-btn');
 
-    function updateDisplay() {
-        scoreEl.innerText = score.toLocaleString();
-        energyText.innerText = `${energy} / ${maxEnergy}`;
-        energyEl.style.width = (energy / maxEnergy * 100) + "%";
+    function updateUI() {
+        scoreEl.innerText = Math.floor(score).toLocaleString();
+        energyText.innerText = `⚡ ${energy} / ${maxEnergy}`;
+        energyBar.style.width = (energy / maxEnergy * 100) + "%";
+        document.getElementById('val-per-click').innerText = `+${clickVal}`;
+        document.getElementById('val-per-hour').innerText = `+${passiveIncome}/s`;
         
-        // Système de niveaux simple
-        const levelName = document.getElementById('level-name');
-        if(score > 100000) levelName.innerText = "👑 Dieu Solaire";
-        else if(score > 10000) levelName.innerText = "🔥 Géante Rouge";
-        else if(score > 1000) levelName.innerText = "✨ Éclat Brillant";
+        // Level logic
+        const levelEl = document.getElementById('display-level');
+        if(score > 500000) levelEl.innerText = "👑 EMPREUR DU SOLEIL";
+        else if(score > 100000) levelEl.innerText = "🔥 GÉANTE ROUGE";
+        else if(score > 10000) levelEl.innerText = "✨ ÉCLAT BRILLANT";
     }
 
+    // Fonction Tap
     sunBtn.addEventListener('click', (e) => {
-        if (energy >= clickValue) {
-            score += clickValue;
-            energy -= clickValue;
-            
-            // Animation +1
-            createFloatingText(e.clientX, e.clientY);
-            
-            // Haptique Telegram
-            if (window.Telegram.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            
-            saveData();
-            updateDisplay();
+        if (energy >= clickVal) {
+            score += clickVal;
+            energy -= clickVal;
+            showClickAnim(e.clientX, e.clientY);
+            if (window.Telegram.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+            updateUI();
+            save();
         }
     });
 
-    function createFloatingText(x, y) {
-        const text = document.createElement('div');
-        text.className = 'plus-one';
-        text.innerText = `+${clickValue}`;
-        text.style.left = `${x}px`;
-        text.style.top = `${y}px`;
-        document.body.appendChild(text);
-        setTimeout(() => text.remove(), 800);
+    function showClickAnim(x, y) {
+        const div = document.createElement('div');
+        div.className = 'floating-point';
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
+        div.innerText = `+${clickVal}`;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 800);
     }
 
-    // Recharge d'énergie automatique (1 point par seconde)
+    // Systèmes
+    function openPanel(id) { document.getElementById(id).style.display = 'block'; }
+    function closePanel(id) { document.getElementById(id).style.display = 'none'; }
+    function closeAllPanels() {
+        document.getElementById('mission-panel').style.display = 'none';
+        document.getElementById('shop-panel').style.display = 'none';
+    }
+
+    function doMission(id, reward, link) {
+        if (!localStorage.getItem('done_' + id)) {
+            score += reward;
+            localStorage.setItem('done_' + id, 'true');
+            window.open(link, '_blank');
+            updateUI();
+            save();
+        } else { alert("Déjà complété !"); }
+    }
+
+    function buyBoost(type, price) {
+        if (score >= price) {
+            score -= price;
+            if (type === 'multitap') clickVal += 1;
+            if (type === 'auto') passiveIncome += 1;
+            updateUI();
+            save();
+            alert("Boost Activé !");
+        } else { alert("Pas assez de points !"); }
+    }
+
+    // Boucles Auto
     setInterval(() => {
-        if (energy < maxEnergy) {
-            energy++;
-            updateDisplay();
-            saveData();
-        }
+        if (energy < maxEnergy) energy++;
+        if (passiveIncome > 0) score += (passiveIncome / 10); // Revenu passif
+        updateUI();
+        save();
     }, 1000);
 
-    function saveData() {
-        localStorage.setItem('shineScore', score);
-        localStorage.setItem('shineEnergy', energy);
+    function save() {
+        localStorage.setItem('shine_score', score);
+        localStorage.setItem('shine_energy', energy);
+        localStorage.setItem('shine_click', clickVal);
+        localStorage.setItem('shine_passive', passiveIncome);
     }
 
-    updateDisplay();
+    // Init Telegram
+    window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
+    updateUI();
 </script>
 
 </body>
