@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun - Global & Referral</title>
+    <title>ShineSun - Viral Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
@@ -63,8 +63,9 @@
             margin-bottom: 12px; border: 1px solid #2c2c2e;
         }
         .card-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
-        
+        .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; width: 100%; margin-top: 5px;}
+        .btn-buy { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
+
         .plus-one { position: absolute; color: white; font-weight: 800; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; }
         @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
 
@@ -76,8 +77,6 @@
 <select class="lang-select" id="lang-picker" onchange="changeLanguage(this.value)">
     <option value="en">English 🇺🇸</option>
     <option value="fr">Français 🇫🇷</option>
-    <option value="es">Español 🇪🇸</option>
-    <option value="tr">Türkçe 🇹🇷</option>
 </select>
 
 <div class="app-container" id="game-view">
@@ -99,30 +98,27 @@
 
 <div id="mission-panel" class="view-panel">
     <h2 id="txt-miss-title" style="color: var(--text-gold);">Missions</h2>
-    <div class="card-item"><div class="card-row"><div><b>X (Twitter)</b><br><small>+3,000</small></div><button class="btn-action" onclick="window.open('https://x.com')">GO</button></div></div>
-    <div class="card-item"><div class="card-row"><div><b id="txt-ig-story">Instagram Story</b><br><small>+20,000</small></div><button class="btn-action" onclick="alert('Shared!')">SHARE</button></div></div>
-    <div class="card-item"><div class="card-row"><div><b>Telegram</b><br><small>+5,000</small></div><button class="btn-action" onclick="window.open('https://t.me')">JOIN</button></div></div>
+    <div class="card-item"><div class="card-row"><div><b>X (Twitter)</b><br><small>+3,000</small></div><button class="btn-buy" onclick="window.open('https://x.com')">GO</button></div></div>
+    <div class="card-item"><div class="card-row"><div><b>Telegram</b><br><small>+5,000</small></div><button class="btn-buy" onclick="window.open('https://t.me')">JOIN</button></div></div>
 </div>
 
 <div id="boost-panel" class="view-panel">
     <h2 id="txt-boost-title" style="color: var(--text-gold);">Boosts</h2>
-    <div class="card-item" onclick="tryCombo('☀️')"><div class="card-row"><div><b id="txt-b1">Solar Panel</b><br><small id="txt-b1-desc">+10/h | 1,000</small></div><button class="btn-action" id="btn-buy-1" onclick="buy(1000, 10)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🚀')"><div class="card-row"><div><b id="txt-b2">Rocket</b><br><small id="txt-b2-desc">+50/h | 5,000</small></div><button class="btn-action" id="btn-buy-2" onclick="buy(5000, 50)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('💎')"><div class="card-row"><div><b id="txt-b3">Crystal</b><br><small id="txt-b3-desc">+100/h | 10,000</small></div><button class="btn-action" id="btn-buy-3" onclick="buy(10000, 100)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🔥')"><div class="card-row"><div><b id="txt-b4">Nuclear</b><br><small id="txt-b4-desc">+500/h | 50,000</small></div><button class="btn-action" id="btn-buy-4" onclick="buy(50000, 500)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('☀️')"><div class="card-row"><div><b>Solar Panel</b><br><small>+10/h | 1,000</small></div><button class="btn-buy" onclick="buy(1000)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('🚀')"><div class="card-row"><div><b>Rocket</b><br><small>+50/h | 5,000</small></div><button class="btn-buy" onclick="buy(5000)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('💎')"><div class="card-row"><div><b>Crystal</b><br><small>+100/h | 10,000</small></div><button class="btn-buy" onclick="buy(10000)">BUY</button></div></div>
+    <div class="card-item" onclick="tryCombo('🔥')"><div class="card-row"><div><b>Nuclear</b><br><small>+500/h | 50,000</small></div><button class="btn-buy" onclick="buy(50000)">BUY</button></div></div>
 </div>
 
 <div id="ref-panel" class="view-panel">
-    <h2 id="txt-ref-title" style="color: var(--text-gold);">Invite Friends</h2>
-    <p id="txt-ref-sub" style="font-size: 12px; color: #888;">Earn 50,000 $SHINE for every friend!</p>
+    <h2 id="txt-ref-title" style="color: var(--text-gold);">Friends</h2>
+    <p id="txt-ref-sub" style="font-size: 13px; color: #ccc;">Invite friends and get 50,000 coins!</p>
     <div class="ref-box">
-        <div id="txt-your-link" style="font-size: 10px; color: var(--text-gold); margin-bottom: 10px;">YOUR REFERRAL LINK:</div>
-        <code id="ref-link" style="font-size: 11px; word-break: break-all;">https://t.me/YOUR_BOT?start=user123</code>
-        <br><br>
-        <button class="btn-action" id="btn-copy" onclick="copyLink()">COPY LINK</button>
+        <button class="btn-action" onclick="shareToTelegram()">📢 SHARE TO FRIENDS</button>
+        <button class="btn-action" style="background: #333; color: white;" onclick="copyLink()">📋 COPY LINK</button>
     </div>
-    <div style="margin-top: 30px; text-align: center;">
-        <span id="txt-total-ref">Total Friends: 0</span>
+    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #666;">
+        <span id="ref-link-display">https://t.me/ShineSunGold_bot?start=...</span>
     </div>
 </div>
 
@@ -134,34 +130,13 @@
 </div>
 
 <script>
-    const i18n = {
-        en: { combo: "DAILY COMBO (+5M)", energy: "⚡ Energy", home: "Home", miss: "Missions", boost: "Boosts", ref: "Friends", refT: "Invite Friends", refS: "Earn 50,000 $SHINE for every friend!", copy: "COPY LINK", buy: "BUY", b1: "Solar Panel", b2: "Rocket", b3: "Crystal", b4: "Nuclear" },
-        fr: { combo: "COMBO QUOTIDIEN (+5M)", energy: "⚡ Énergie", home: "Accueil", miss: "Missions", boost: "Boosts", ref: "Amis", refT: "Inviter des Amis", refS: "Gagnez 50,000 $SHINE par ami !", copy: "COPIER LIEN", buy: "ACHETER", b1: "Panneau Solaire", b2: "Fusée Shine", b3: "Cristal de Feu", b4: "Fusion Nucléaire" },
-        es: { combo: "COMBO DIARIO (+5M)", energy: "⚡ Energía", home: "Inicio", miss: "Misiones", boost: "Mejoras", ref: "Amigos", refT: "Invitar Amigos", refS: "¡Gana 50,000 $SHINE por amigo!", copy: "COPIAR", buy: "COMPRAR", b1: "Panel Solar", b2: "Cohete", b3: "Cristal", b4: "Nuclear" },
-        tr: { combo: "GÜNLÜK KOMBO (+5M)", energy: "⚡ Enerji", home: "Ana Sayfa", miss: "Görevler", boost: "Güçler", ref: "Arkadaşlar", refT: "Arkadaş Davet Et", refS: "Her arkadaş için 50,000 $SHINE kazan!", copy: "KOPYALA", buy: "SATIN AL", b1: "Güneş Paneli", b2: "Roket", b3: "Kristal", b4: "Nükleer" }
-    };
-
-    function changeLanguage(l) {
-        const d = i18n[l];
-        document.getElementById('txt-combo-desc').innerText = d.combo;
-        document.getElementById('txt-energy').innerText = d.energy;
-        document.getElementById('txt-home').innerText = d.home;
-        document.getElementById('txt-miss').innerText = d.miss;
-        document.getElementById('txt-boost').innerText = d.boost;
-        document.getElementById('txt-ref').innerText = d.ref;
-        document.getElementById('txt-ref-title').innerText = d.refT;
-        document.getElementById('txt-ref-sub').innerText = d.refS;
-        document.getElementById('btn-copy').innerText = d.copy;
-        document.getElementById('txt-b1').innerText = d.b1;
-        document.getElementById('txt-b2').innerText = d.b2;
-        document.getElementById('txt-b3').innerText = d.b3;
-        document.getElementById('txt-b4').innerText = d.b4;
-    }
-
     let score = parseInt(localStorage.getItem('sh_score')) || 0;
     let energy = 1000;
     let currentCombo = [];
     const target = ['☀️', '💎', '🔥'];
+
+    const botUsername = "ShineSunGold_bot"; // TON VRAI BOT
+    let userId = "0000";
 
     function updateUI() {
         document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
@@ -169,10 +144,26 @@
         document.getElementById('energy-bar').style.width = (energy/10) + "%";
     }
 
+    // FONCTION PARTAGE VIRAL
+    function shareToTelegram() {
+        const url = `https://t.me/${botUsername}?start=${userId}`;
+        const text = "☀️ Join me on ShineSun! Tap, earn, and win 5M daily combo! 🚀";
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank');
+    }
+
+    function copyLink() {
+        const url = `https://t.me/${botUsername}?start=${userId}`;
+        navigator.clipboard.writeText(url);
+        alert("Copied!");
+    }
+
     document.getElementById('sun-btn').addEventListener('click', (e) => {
         if(energy > 0) {
             score++; energy--;
-            const d = document.createElement('div'); d.className='plus-one'; d.style.left=e.clientX+'px'; d.style.top=e.clientY+'px'; d.innerText="+1"; document.body.appendChild(d);
+            const d = document.createElement('div'); d.className='plus-one'; 
+            d.style.left=e.clientX+'px'; d.style.top=e.clientY+'px'; 
+            d.innerText="+1"; document.body.appendChild(d);
             setTimeout(()=>d.remove(), 700); updateUI(); save();
         }
     });
@@ -188,13 +179,7 @@
         }
     }
 
-    function buy(cost, pow) { if(score >= cost) { score -= cost; updateUI(); save(); alert("Success!"); } }
-
-    function copyLink() {
-        const link = document.getElementById('ref-link').innerText;
-        navigator.clipboard.writeText(link);
-        alert("Link copied to clipboard!");
-    }
+    function buy(cost) { if(score >= cost) { score -= cost; updateUI(); save(); alert("Boost OK!"); } }
 
     function tryCombo(s) {
         if(currentCombo.length < 3) {
@@ -202,7 +187,7 @@
             document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
             document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
             if(currentCombo.length === 3) {
-                if(JSON.stringify(currentCombo) === JSON.stringify(target)) { score += 5000000; alert("COMBO!"); }
+                if(JSON.stringify(currentCombo) === JSON.stringify(target)) { score += 5000000; alert("5,000,000 $SHINE WIN!"); }
                 else { alert("Fail"); currentCombo = []; setTimeout(()=> { for(let i=0;i<3;i++){document.getElementById(`slot-${i}`).innerText="?";document.getElementById(`slot-${i}`).classList.remove('active');}}, 500); }
                 updateUI(); save();
             }
@@ -213,12 +198,12 @@
     function save() { localStorage.setItem('sh_score', score); }
 
     window.onload = () => {
-        // Détecter l'ID utilisateur Telegram si possible
-        const user = window.Telegram.WebApp.initDataUnsafe.user;
-        if(user) {
-            document.getElementById('ref-link').innerText = `https://t.me/ShineSunGold_bot?start=${user.id}`;
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        if(tg.initDataUnsafe.user) {
+            userId = tg.initDataUnsafe.user.id;
+            document.getElementById('ref-link-display').innerText = `https://t.me/${botUsername}?start=${userId}`;
         }
-        changeLanguage('en');
         updateUI();
     };
 </script>
