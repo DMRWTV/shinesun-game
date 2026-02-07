@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun - Tap to Earn</title>
+    <title>ShineSun - Global Tap-to-Earn</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
@@ -21,64 +21,80 @@
 
         .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
 
-        /* Stats & Combo Header */
-        .header-info { text-align: center; margin-bottom: 10px; }
+        /* Language Selector */
+        .lang-select {
+            position: absolute; top: 10px; right: 10px;
+            background: #222; color: white; border: 1px solid #444;
+            border-radius: 5px; font-size: 10px; padding: 5px; z-index: 2000;
+        }
+
+        /* Stats & Combo */
+        .header-info { text-align: center; margin-bottom: 5px; margin-top: 15px; }
         .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
         .combo-slot {
-            width: 50px; height: 50px; background: #222; border: 2px dashed #444;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+            width: 45px; height: 45px; background: #222; border: 2px dashed #444;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
         }
         .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; }
 
-        .main-score { font-size: 42px; font-weight: 900; text-align: center; margin: 5px 0; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .main-score { font-size: 38px; font-weight: 900; text-align: center; margin: 5px 0; }
 
         /* Game Area */
         .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         .sun-main {
-            width: 220px; height: 220px; background: var(--sun-gradient);
+            width: 200px; height: 200px; background: var(--sun-gradient);
             border-radius: 50%; box-shadow: 0 0 60px rgba(255, 140, 0, 0.4);
             cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1);
             z-index: 10;
         }
         .sun-main:active { transform: scale(0.92); }
 
-        /* Navigation Basse */
+        /* Navigation */
         .footer-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: #151515; border-top: 1px solid #333;
             display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
         }
-        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; text-decoration: none; }
+        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
 
-        /* Panels (Missions & Boosts) */
+        /* Panels */
         .view-panel {
             position: fixed; top: 0; left: 0; width: 100%; height: 90vh;
             background: var(--bg-color); z-index: 500; display: none; padding: 20px; 
             box-sizing: border-box; overflow-y: auto; padding-bottom: 100px;
         }
         .card-item {
-            background: var(--card-bg); padding: 16px; border-radius: 16px; 
-            margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;
-            border: 1px solid #2c2c2e;
+            background: var(--card-bg); padding: 15px; border-radius: 16px; 
+            margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #2c2c2e;
         }
         .card-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .btn-action { background: var(--text-gold); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
+        .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; font-size: 11px; }
         
-        /* Inputs Missions */
-        .verify-box { display: flex; gap: 5px; width: 100%; margin-top: 5px; }
-        .input-pseudo { background: #000; border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; flex-grow: 1; outline: none; }
+        .verify-box { display: flex; gap: 5px; width: 100%; }
+        .input-pseudo { background: #000; border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; flex-grow: 1; font-size: 12px; }
 
-        /* Animations Clic */
-        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 28px; animation: fly 0.7s forwards; pointer-events: none; z-index: 100; }
+        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; z-index: 100; }
         @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
     </style>
 </head>
 <body>
 
+<select class="lang-select" onchange="changeLanguage(this.value)">
+    <option value="en">English 🇺🇸</option>
+    <option value="fr">Français 🇫🇷</option>
+    <option value="es">Español 🇪🇸</option>
+    <option value="it">Italiano 🇮🇹</option>
+    <option value="de">Deutsch 🇩🇪</option>
+    <option value="tr">Türkçe 🇹🇷</option>
+    <option value="sq">Shqip 🇦🇱</option>
+    <option value="zh">中文 🇨🇳</option>
+    <option value="ja">日本語 🇯🇵</option>
+</select>
+
 <div class="app-container" id="game-view">
     <div class="header-info">
-        <div style="font-size: 11px; color: #888;">COMBO QUOTIDIEN (+5,000,000 $SHINE)</div>
+        <div id="txt-combo-desc" style="font-size: 10px; color: #888;">DAILY COMBO (+5,000,000)</div>
         <div class="combo-container">
             <div class="combo-slot" id="slot-0">?</div>
             <div class="combo-slot" id="slot-1">?</div>
@@ -87,131 +103,169 @@
     </div>
 
     <div class="main-score" id="score-display">0</div>
-    <div style="text-align: center; color: #888; font-size: 12px; margin-bottom: 10px;" id="level-name">🌞 ÉTINCELLE NOVICE</div>
+    <div style="text-align: center; color: #888; font-size: 11px; margin-bottom: 10px;" id="level-name">🌞 NOVICE</div>
 
     <div class="game-area">
         <div class="sun-main" id="sun-btn"></div>
     </div>
 
     <div style="margin-bottom: 70px;">
-        <div style="display: flex; justify-content: space-between; font-size: 13px;">
-            <span>⚡ Énergie</span>
+        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+            <span id="txt-energy">⚡ Energy</span>
             <span id="energy-val">1000/1000</span>
         </div>
-        <div style="width: 100%; height: 10px; background: #333; border-radius: 10px; margin-top: 5px;">
+        <div style="width: 100%; height: 8px; background: #333; border-radius: 10px; margin-top: 5px;">
             <div id="energy-bar" style="width: 100%; height: 100%; background: var(--sun-gradient); border-radius: 10px; transition: width 0.2s;"></div>
         </div>
     </div>
 </div>
 
 <div id="mission-panel" class="view-panel">
-    <h2 style="color: var(--text-gold);">Missions Virales 🚀</h2>
-    <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Fais briller le projet et accumule des millions !</p>
+    <h2 id="txt-miss-title" style="color: var(--text-gold);">Viral Missions</h2>
+    <p id="txt-miss-subtitle" style="font-size: 11px; color: #888; margin-bottom: 20px;">Boost your score now!</p>
     
     <div class="card-item">
         <div class="card-row">
-            <div><b>Suivre sur X</b><br><small>+3,000 $SHINE</small></div>
-            <button class="btn-action" onclick="doMission('x', 3000, 'https://x.com/TON_COMPTE')">GO</button>
+            <div><b id="txt-follow-x">Follow on X</b><br><small>+3,000 $SHINE</small></div>
+            <button class="btn-action" onclick="doMission('x', 3000, 'https://x.com/')">GO</button>
         </div>
     </div>
 
     <div class="card-item">
         <div class="card-row">
-            <div><b>Partager en Story Instagram</b><br><small>+20,000 $SHINE</small></div>
-            <button class="btn-action" onclick="openStory('ig')">PARTAGER</button>
+            <div><b id="txt-ig-story">Instagram Story</b><br><small>+20,000 $SHINE</small></div>
+            <button class="btn-action" id="btn-share-ig" onclick="openStory('ig')">SHARE</button>
         </div>
         <div id="verify-ig" style="display:none;">
             <div class="verify-box">
-                <input type="text" id="user-ig" class="input-pseudo" placeholder="@TonPseudo">
-                <button class="btn-action" onclick="verifyStory('ig', 20000)">VÉRIFIER</button>
+                <input type="text" id="user-ig" class="input-pseudo" placeholder="@Username">
+                <button class="btn-action" id="btn-verify-ig" onclick="verifyStory('ig', 20000)">VERIFY</button>
             </div>
         </div>
     </div>
 
     <div class="card-item">
         <div class="card-row">
-            <div><b>Partager en Story TikTok</b><br><small>+25,000 $SHINE</small></div>
-            <button class="btn-action" onclick="openStory('tk')">PARTAGER</button>
+            <div><b id="txt-tk-story">TikTok Story</b><br><small>+25,000 $SHINE</small></div>
+            <button class="btn-action" id="btn-share-tk" onclick="openStory('tk')">SHARE</button>
         </div>
         <div id="verify-tk" style="display:none;">
             <div class="verify-box">
-                <input type="text" id="user-tk" class="input-pseudo" placeholder="@TonPseudo">
-                <button class="btn-action" onclick="verifyStory('tk', 25000)">VÉRIFIER</button>
+                <input type="text" id="user-tk" class="input-pseudo" placeholder="@Username">
+                <button class="btn-action" id="btn-verify-tk" onclick="verifyStory('tk', 25000)">VERIFY</button>
             </div>
-        </div>
-    </div>
-
-    <div class="card-item">
-        <div class="card-row">
-            <div><b>Rejoindre Telegram</b><br><small>+5,000 $SHINE</small></div>
-            <button class="btn-action" onclick="doMission('tg', 5000, 'https://t.me/TON_CANAL')">REJOINDRE</button>
         </div>
     </div>
 </div>
 
 <div id="boost-panel" class="view-panel">
-    <h2 style="color: var(--text-gold);">Boutique & Boosts 💰</h2>
-    <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Utilise les cartes pour le combo du jour !</p>
-    
+    <h2 id="txt-boost-title" style="color: var(--text-gold);">Shop & Boosts</h2>
     <div class="card-item" onclick="tryCombo('☀️')">
         <div class="card-row">
-            <div><b>Panneau Solaire</b><br><small>Passif: +10/h | Coût: 1,000</small></div>
-            <button class="btn-action" onclick="buyBoost('auto', 1000, 10)">ACHETER</button>
+            <div><b id="txt-b1-title">Solar Panel</b><br><small id="txt-b1-desc">Passive: +10/h | Cost: 1k</small></div>
+            <button class="btn-action" id="btn-buy">BUY</button>
         </div>
     </div>
-    <div class="card-item" onclick="tryCombo('🚀')">
-        <div class="card-row">
-            <div><b>Fusée Shine</b><br><small>Passif: +50/h | Coût: 5,000</small></div>
-            <button class="btn-action" onclick="buyBoost('auto', 5000, 50)">ACHETER</button>
-        </div>
     </div>
-    <div class="card-item" onclick="tryCombo('💎')">
-        <div class="card-row">
-            <div><b>Cristal de Feu</b><br><small>Passif: +100/h | Coût: 10,000</small></div>
-            <button class="btn-action" onclick="buyBoost('auto', 10000, 100)">ACHETER</button>
-        </div>
-    </div>
-    <div class="card-item" onclick="tryCombo('🔥')">
-        <div class="card-row">
-            <div><b>Fusion Nucléaire</b><br><small>Passif: +500/h | Coût: 50,000</small></div>
-            <button class="btn-action" onclick="buyBoost('auto', 50000, 500)">ACHETER</button>
-        </div>
-    </div>
-</div>
 
 <div class="footer-nav">
-    <div class="nav-btn active" id="nav-home" onclick="showView('game')">🏠<br>Home</div>
-    <div class="nav-btn" id="nav-miss" onclick="showView('mission')">🚀<br>Missions</div>
-    <div class="nav-btn" id="nav-boost" onclick="showView('boost')">💰<br>Boosts</div>
+    <div class="nav-btn active" id="nav-home" onclick="showView('game')">🏠<br><span id="txt-nav-home">Home</span></div>
+    <div class="nav-btn" id="nav-miss" onclick="showView('mission')">🚀<br><span id="txt-nav-miss">Missions</span></div>
+    <div class="nav-btn" id="nav-boost" onclick="showView('boost')">💰<br><span id="txt-nav-boost">Boosts</span></div>
 </div>
 
 <script>
+    const i18n = {
+        en: {
+            combo: "DAILY COMBO (+5,000,000)", energy: "⚡ Energy", home: "Home", missions: "Missions", boosts: "Boosts", 
+            mTitle: "Viral Missions", mSub: "Boost your score!", followX: "Follow on X", igStory: "Instagram Story", 
+            tkStory: "TikTok Story", share: "SHARE", verify: "VERIFY", bTitle: "Shop & Boosts", b1T: "Solar Panel", b1D: "Passive: +10/h | Cost: 1k", buy: "BUY"
+        },
+        fr: {
+            combo: "COMBO QUOTIDIEN (+5,000,000)", energy: "⚡ Énergie", home: "Accueil", missions: "Missions", boosts: "Boosts", 
+            mTitle: "Missions Virales", mSub: "Boost ton score !", followX: "Suivre sur X", igStory: "Story Instagram", 
+            tkStory: "Story TikTok", share: "PARTAGER", verify: "VÉRIFIER", bTitle: "Boutique & Boosts", b1T: "Panneau Solaire", b1D: "Passif: +10/h | Coût: 1k", buy: "ACHETER"
+        },
+        es: {
+            combo: "COMBO DIARIO (+5,000,000)", energy: "⚡ Energía", home: "Inicio", missions: "Misiones", boosts: "Mejoras", 
+            mTitle: "Misiones Virales", mSub: "¡Sube tu puntuación!", followX: "Seguir en X", igStory: "Story de Instagram", 
+            tkStory: "Story de TikTok", share: "COMPARTIR", verify: "VERIFICAR", bTitle: "Tienda y Mejoras", b1T: "Panel Solar", b1D: "Pasivo: +10/h | Coste: 1k", buy: "COMPRAR"
+        },
+        tr: {
+            combo: "GÜNLÜK KOMBO (+5,000,000)", energy: "⚡ Enerji", home: "Ana Sayfa", missions: "Görevler", boosts: "Güçlendiriciler", 
+            mTitle: "Viral Görevler", mSub: "Puanını hemen artır!", followX: "X'te Takip Et", igStory: "Instagram Hikayesi", 
+            tkStory: "TikTok Hikayesi", share: "PAYLAŞ", verify: "DOĞRULA", bTitle: "Mağaza & Güçler", b1T: "Güneş Paneli", b1D: "Pasif: +10/s | Maliyet: 1k", buy: "SATIN AL"
+        },
+        it: {
+            combo: "COMBO GIORNALIERO (+5,000,000)", energy: "⚡ Energia", home: "Home", missions: "Missioni", boosts: "Potenziamenti", 
+            mTitle: "Missioni Virali", mSub: "Aumenta il tuo punteggio!", followX: "Segui su X", igStory: "Storia Instagram", 
+            tkStory: "Storia TikTok", share: "CONDIVIDI", verify: "VERIFICA", bTitle: "Negozio e Boost", b1T: "Pannello Solare", b1D: "Passivo: +10/h | Costo: 1k", buy: "ACQUISTA"
+        },
+        de: {
+            combo: "TÄGLICHE COMBO (+5,000,000)", energy: "⚡ Energie", home: "Home", missions: "Missionen", boosts: "Boosts", 
+            mTitle: "Virale Missionen", mSub: "Erhöhe deinen Punktestand!", followX: "Folge auf X", igStory: "Instagram Story", 
+            tkStory: "TikTok Story", share: "TEILEN", verify: "PRÜFEN", bTitle: "Shop & Boosts", b1T: "Solarpanel", b1D: "Passiv: +10/h | Kosten: 1k", buy: "KAUFEN"
+        },
+        sq: {
+            combo: "KOMBO DITORE (+5,000,000)", energy: "⚡ Energjia", home: "Kreu", missions: "Misionet", boosts: "Përforcime", 
+            mTitle: "Misionet Virale", mSub: "Rritni pikët tuaja!", followX: "Ndiqni në X", igStory: "Instagram Story", 
+            tkStory: "TikTok Story", share: "SHPËRNDAJE", verify: "VERIFIKO", bTitle: "Dyqani & Boosts", b1T: "Panel Diellor", b1D: "Pasiv: +10/h | Kosto: 1k", buy: "BLI"
+        },
+        zh: {
+            combo: "每日组合 (+5,000,000)", energy: "⚡ 能量", home: "首页", missions: "任务", boosts: "加速", 
+            mTitle: "病毒式任务", mSub: "立即提升你的分数!", followX: "关注 X", igStory: "Instagram 故事", 
+            tkStory: "TikTok 故事", share: "分享", verify: "验证", bTitle: "商店和加速", b1T: "太阳能电池板", b1D: "被动: +10/h | 成本: 1k", buy: "购买"
+        },
+        ja: {
+            combo: "デイリーコンボ (+5,000,000)", energy: "⚡ エネルギー", home: "ホーム", missions: "ミッション", boosts: "ブースト", 
+            mTitle: "バイラルミッション", mSub: "今すぐスコアをアップ!", followX: "Xでフォロー", igStory: "Instagram ストーリー", 
+            tkStory: "TikTok ストーリー", share: "共有", verify: "確認", bTitle: "ショップとブースト", b1T: "ソーラーパネル", b1D: "パッシブ: +10/h | コスト: 1k", buy: "購入"
+        }
+    };
+
+    let currentLang = 'en';
+    function changeLanguage(lang) {
+        currentLang = lang;
+        const d = i18n[lang];
+        document.getElementById('txt-combo-desc').innerText = d.combo;
+        document.getElementById('txt-energy').innerText = d.energy;
+        document.getElementById('txt-nav-home').innerText = d.home;
+        document.getElementById('txt-nav-miss').innerText = d.missions;
+        document.getElementById('txt-nav-boost').innerText = d.boosts;
+        document.getElementById('txt-miss-title').innerText = d.mTitle;
+        document.getElementById('txt-miss-subtitle').innerText = d.mSub;
+        document.getElementById('txt-follow-x').innerText = d.followX;
+        document.getElementById('txt-ig-story').innerText = d.igStory;
+        document.getElementById('txt-tk-story').innerText = d.tkStory;
+        document.getElementById('btn-share-ig').innerText = d.share;
+        document.getElementById('btn-share-tk').innerText = d.share;
+        document.getElementById('btn-verify-ig').innerText = d.verify;
+        document.getElementById('btn-verify-tk').innerText = d.verify;
+        document.getElementById('txt-boost-title').innerText = d.bTitle;
+        document.getElementById('txt-b1-title').innerText = d.b1T;
+        document.getElementById('txt-b1-desc').innerText = d.b1D;
+        document.getElementById('btn-buy').innerText = d.buy;
+    }
+
+    // --- GAME LOGIC (Keep same as before) ---
     let score = parseInt(localStorage.getItem('sh_score')) || 0;
     let energy = 1000;
     let clickVal = 1;
     let passive = 0;
     let currentCombo = [];
-    const targetCombo = ['☀️', '💎', '🔥']; // Changez cet ordre pour changer le combo du jour
+    const targetCombo = ['☀️', '💎', '🔥'];
 
     function updateUI() {
         document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
         document.getElementById('energy-bar').style.width = (energy / 10) + "%";
         document.getElementById('energy-val').innerText = `${energy}/1000`;
-        
-        const lvl = document.getElementById('level-name');
-        if(score > 1000000) lvl.innerText = "👑 EMPEREUR SOLAIRE";
-        else if(score > 100000) lvl.innerText = "🔥 GÉANTE ROUGE";
-        else lvl.innerText = "🌞 ÉTINCELLE NOVICE";
     }
 
-    // Gestion du Clic
     document.getElementById('sun-btn').addEventListener('click', (e) => {
         if(energy >= clickVal) {
-            score += clickVal;
-            energy -= clickVal;
-            const x = e.clientX; const y = e.clientY;
+            score += clickVal; energy -= clickVal;
             const d = document.createElement('div');
-            d.className = 'plus-one'; d.style.left = x+'px'; d.style.top = y+'px';
+            d.className = 'plus-one'; d.style.left = e.clientX+'px'; d.style.top = e.clientY+'px';
             d.innerText = "+"+clickVal; document.body.appendChild(d);
             setTimeout(() => d.remove(), 700);
             if(window.Telegram.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -219,64 +273,37 @@
         }
     });
 
-    // Navigation
     function showView(v) {
         document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(v === 'mission') {
-            document.getElementById('mission-panel').style.display = 'block';
-            document.getElementById('nav-miss').classList.add('active');
-        } else if(v === 'boost') {
-            document.getElementById('boost-panel').style.display = 'block';
-            document.getElementById('nav-boost').classList.add('active');
-        } else {
-            document.getElementById('nav-home').classList.add('active');
-        }
+        if(v === 'mission') { document.getElementById('mission-panel').style.display = 'block'; document.getElementById('nav-miss').classList.add('active'); }
+        else if(v === 'boost') { document.getElementById('boost-panel').style.display = 'block'; document.getElementById('nav-boost').classList.add('active'); }
+        else { document.getElementById('nav-home').classList.add('active'); }
     }
 
-    // Missions Story
     function openStory(plat) {
-        let link = plat === 'ig' ? 'https://instagram.com/' : 'https://www.tiktok.com/';
-        window.open(link, '_blank');
+        window.open(plat === 'ig' ? 'https://instagram.com/' : 'https://tiktok.com/', '_blank');
         document.getElementById('verify-' + plat).style.display = 'block';
     }
 
     function verifyStory(plat, rew) {
-        let pseudo = document.getElementById('user-' + plat).value;
-        if(pseudo.length < 3) { alert("Entre un pseudo valide !"); return; }
-        
-        if(!localStorage.getItem('m_st_'+plat)) {
-            let btn = event.target;
-            btn.innerText = "...";
-            setTimeout(() => {
-                score += rew;
-                localStorage.setItem('m_st_'+plat, 'true');
-                updateUI(); save();
-                alert("Vérification réussie ! Points ajoutés.");
-                document.getElementById('verify-' + plat).innerHTML = "✅ Validé pour " + pseudo;
-            }, 2000);
-        }
+        let p = document.getElementById('user-' + plat).value;
+        if(p.length < 3) return;
+        event.target.innerText = "...";
+        setTimeout(() => {
+            score += rew; localStorage.setItem('m_st_'+plat, 'true');
+            updateUI(); save(); alert("Success! Points added.");
+            document.getElementById('verify-' + plat).innerHTML = "✅ Done";
+        }, 2000);
     }
 
     function doMission(id, rew, link) {
         if(!localStorage.getItem('m_'+id)) {
-            score += rew;
-            localStorage.setItem('m_'+id, 'true');
-            window.open(link, '_blank');
-            updateUI(); save();
-            alert("Récompense Shine ajoutée !");
+            score += rew; localStorage.setItem('m_'+id, 'true');
+            window.open(link, '_blank'); updateUI(); save();
         }
     }
 
-    function buyBoost(type, cost, power) {
-        if(score >= cost) {
-            score -= cost;
-            passive += (power / 3600);
-            updateUI(); save();
-        } else { alert("Pas assez de points !"); }
-    }
-
-    // Combo
     function tryCombo(s) {
         if(currentCombo.length < 3) {
             currentCombo.push(s);
@@ -284,12 +311,8 @@
             document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
             if(currentCombo.length === 3) {
                 if(JSON.stringify(currentCombo) === JSON.stringify(targetCombo)) {
-                    score += 5000000;
-                    alert("☀️ COMBO GAGNÉ ! +5M $SHINE");
-                } else {
-                    alert("Mauvais combo ! Réessaie demain.");
-                    resetCombo();
-                }
+                    score += 5000000; alert("Combo Winner! +5M");
+                } else { alert("Try again tomorrow!"); resetCombo(); }
             }
         }
     }
@@ -304,16 +327,8 @@
         }, 1000);
     }
 
-    // Boucle de mise à jour (Énergie + Passif)
-    setInterval(() => {
-        if(energy < 1000) energy++;
-        if(passive > 0) score += passive;
-        updateUI(); save();
-    }, 1000);
-
-    function save() {
-        localStorage.setItem('sh_score', score);
-    }
+    setInterval(() => { if(energy < 1000) energy++; if(passive > 0) score += (passive/10); updateUI(); save(); }, 1000);
+    function save() { localStorage.setItem('sh_score', score); }
 
     window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
