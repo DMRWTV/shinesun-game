@@ -1,87 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShineSun - Viral Edition</title>
+    <title>ShineSun Gold - Edition Finale</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        :root { 
-            --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); 
-            --bg-color: #0b0b0b;
-            --card-bg: #1c1c1e;
-            --text-gold: #FFD700;
-        }
-
-        body { 
-            background-color: var(--bg-color); color: white; 
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0; 
-            user-select: none; overflow: hidden;
-        }
-
+        :root { --sun-gradient: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%); --bg-color: #0b0b0b; --card-bg: #1c1c1e; --text-gold: #FFD700; }
+        body { background-color: var(--bg-color); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; user-select: none; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
-
-        .lang-select {
-            position: fixed; top: 15px; right: 15px;
-            background: #222; color: white; border: 1px solid var(--text-gold);
-            border-radius: 8px; font-size: 12px; padding: 5px; z-index: 3000;
-        }
-
-        .header-info { text-align: center; margin-top: 25px; }
+        .header-info { text-align: center; margin-top: 10px; }
         .combo-container { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
-        .combo-slot {
-            width: 45px; height: 45px; background: #222; border: 2px dashed #444;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
-        }
+        .combo-slot { width: 40px; height: 40px; background: #222; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .combo-slot.active { border-color: var(--text-gold); background: var(--card-bg); border-style: solid; }
-
-        .main-score { font-size: 42px; font-weight: 900; text-align: center; margin: 5px 0; }
-
-        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-        .sun-main {
-            width: 180px; height: 180px; background: var(--sun-gradient);
-            border-radius: 50%; box-shadow: 0 0 50px rgba(255, 140, 0, 0.4);
-            cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1);
-        }
+        .main-score { font-size: 40px; font-weight: 900; text-align: center; margin: 10px 0; color: var(--text-gold); }
+        .game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        .sun-main { width: 190px; height: 190px; background: var(--sun-gradient); border-radius: 50%; box-shadow: 0 0 50px rgba(255, 140, 0, 0.4); cursor: pointer; transition: transform 0.05s; border: 8px solid rgba(255,255,255,0.1); }
         .sun-main:active { transform: scale(0.92); }
-
-        .footer-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #151515; border-top: 1px solid #333;
-            display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000;
-        }
-        .nav-btn { color: #666; font-size: 9px; text-align: center; cursor: pointer; flex: 1; }
+        .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #151515; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-btn { color: #666; font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
         .nav-btn.active { color: var(--text-gold); font-weight: bold; }
-
-        .view-panel {
-            position: fixed; top: 0; left: 0; width: 100%; height: 90vh;
-            background: var(--bg-color); z-index: 500; display: none; padding: 20px; 
-            box-sizing: border-box; overflow-y: auto; padding-bottom: 100px;
-        }
-        .card-item {
-            background: var(--card-bg); padding: 15px; border-radius: 16px; 
-            margin-bottom: 12px; border: 1px solid #2c2c2e;
-        }
-        .card-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .btn-action { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; width: 100%; margin-top: 5px;}
-        .btn-buy { background: var(--text-gold); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
-
-        .plus-one { position: absolute; color: white; font-weight: 800; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; }
-        @keyframes fly { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
-
-        .ref-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--text-gold); text-align: center; margin-top: 20px; }
+        .view-panel { position: fixed; top: 0; left: 0; width: 100%; height: 88vh; background: var(--bg-color); z-index: 500; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 100px; }
+        .card-item { background: var(--card-bg); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; }
+        .btn-buy { background: var(--text-gold); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; color: black; cursor: pointer; }
+        .btn-action { background: var(--text-gold); border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<select class="lang-select" id="lang-picker" onchange="changeLanguage(this.value)">
-    <option value="en">English 🇺🇸</option>
-    <option value="fr">Français 🇫🇷</option>
-</select>
-
 <div class="app-container" id="game-view">
     <div class="header-info">
-        <div id="txt-combo-desc" style="font-size: 10px; color: #888;">DAILY COMBO (+5,000,000)</div>
+        <div style="font-size: 10px; color: #888;">DAILY COMBO (+5,000,000)</div>
         <div class="combo-container">
             <div class="combo-slot" id="slot-0">?</div>
             <div class="combo-slot" id="slot-1">?</div>
@@ -90,96 +41,79 @@
     </div>
     <div class="main-score" id="score-display">0</div>
     <div class="game-area"><div class="sun-main" id="sun-btn"></div></div>
-    <div style="margin-bottom: 70px;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px;"><span id="txt-energy">⚡ Energy</span><span id="energy-val">1000/1000</span></div>
-        <div style="width: 100%; height: 8px; background: #333; border-radius: 10px; margin-top: 5px;"><div id="energy-bar" style="width: 100%; height: 100%; background: var(--sun-gradient); border-radius: 10px;"></div></div>
-    </div>
 </div>
 
 <div id="mission-panel" class="view-panel">
-    <h2 id="txt-miss-title" style="color: var(--text-gold);">Missions</h2>
-    <div class="card-item"><div class="card-row"><div><b>X (Twitter)</b><br><small>+3,000</small></div><button class="btn-buy" onclick="window.open('https://x.com')">GO</button></div></div>
-    <div class="card-item"><div class="card-row"><div><b>Telegram</b><br><small>+5,000</small></div><button class="btn-buy" onclick="window.open('https://t.me')">JOIN</button></div></div>
+    <h2 style="color: var(--text-gold);">Missions</h2>
+    <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000</small></div><button class="btn-buy" onclick="completeMission(10000)">GO</button></div>
+    <div class="card-item"><div><b>Telegram Channel</b><br><small>+20,000</small></div><button class="btn-buy" onclick="completeMission(20000)">JOIN</button></div>
 </div>
 
 <div id="boost-panel" class="view-panel">
-    <h2 id="txt-boost-title" style="color: var(--text-gold);">Boosts</h2>
-    <div class="card-item" onclick="tryCombo('☀️')"><div class="card-row"><div><b>Solar Panel</b><br><small>+10/h | 1,000</small></div><button class="btn-buy" onclick="buy(1000)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🚀')"><div class="card-row"><div><b>Rocket</b><br><small>+50/h | 5,000</small></div><button class="btn-buy" onclick="buy(5000)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('💎')"><div class="card-row"><div><b>Crystal</b><br><small>+100/h | 10,000</small></div><button class="btn-buy" onclick="buy(10000)">BUY</button></div></div>
-    <div class="card-item" onclick="tryCombo('🔥')"><div class="card-row"><div><b>Nuclear</b><br><small>+500/h | 50,000</small></div><button class="btn-buy" onclick="buy(50000)">BUY</button></div></div>
+    <h2 style="color: var(--text-gold);">Boosts</h2>
+    <div class="card-item" onclick="tryCombo('☀️')"><div><b>Solar Panel</b><br><small>Combo Item 1</small></div><button class="btn-buy" onclick="buy(1000)">1,000</button></div>
+    <div class="card-item" onclick="tryCombo('💎')"><div><b>Crystal</b><br><small>Combo Item 2</small></div><button class="btn-buy" onclick="buy(5000)">5,000</button></div>
+    <div class="card-item" onclick="tryCombo('🔥')"><div><b>Nuclear</b><br><small>Combo Item 3</small></div><button class="btn-buy" onclick="buy(10000)">10,000</button></div>
 </div>
 
 <div id="ref-panel" class="view-panel">
-    <h2 id="txt-ref-title" style="color: var(--text-gold);">Friends</h2>
-    <p id="txt-ref-sub" style="font-size: 13px; color: #ccc;">Invite friends and get 50,000 coins!</p>
-    <div class="ref-box">
-        <button class="btn-action" onclick="shareToTelegram()">📢 SHARE TO FRIENDS</button>
-        <button class="btn-action" style="background: #333; color: white;" onclick="copyLink()">📋 COPY LINK</button>
-    </div>
-    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #666;">
-        <span id="ref-link-display">https://t.me/ShineSunGold_bot?start=...</span>
+    <h2 style="color: var(--text-gold);">Amis</h2>
+    <p>Invitez et gagnez 50,000 $SHINE !</p>
+    <div style="background:#000; padding:20px; border-radius:15px; border:1px dashed var(--text-gold); text-align:center;">
+        <button class="btn-action" onclick="shareToTelegram()">📢 INVITER DES AMIS</button>
+        <button class="btn-action" style="background:#333; color:white;" onclick="copyLink()">📋 COPIER LE LIEN</button>
     </div>
 </div>
 
 <div class="footer-nav">
-    <div class="nav-btn active" id="nav-btn-home" onclick="showView('game')">🏠<br><span id="txt-home">Home</span></div>
-    <div class="nav-btn" id="nav-btn-miss" onclick="showView('mission')">🚀<br><span id="txt-miss">Missions</span></div>
-    <div class="nav-btn" id="nav-btn-boost" onclick="showView('boost')">💰<br><span id="txt-boost">Boosts</span></div>
-    <div class="nav-btn" id="nav-btn-ref" onclick="showView('ref')">👥<br><span id="txt-ref">Friends</span></div>
+    <div class="nav-btn active" id="nav-game" onclick="showView('game')">🏠<br>Jouer</div>
+    <div class="nav-btn" id="nav-mission" onclick="showView('mission')">🚀<br>Missions</div>
+    <div class="nav-btn" id="nav-boost" onclick="showView('boost')">💰<br>Boosts</div>
+    <div class="nav-btn" id="nav-ref" onclick="showView('ref')">👥<br>Amis</div>
 </div>
 
 <script>
-    let score = parseInt(localStorage.getItem('sh_score')) || 0;
-    let energy = 1000;
+    // CONFIGURATION FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyAHGs4Lcd-KefevIcsum5BwBHM9zimso0c",
+        authDomain: "shinesungame.firebaseapp.com",
+        projectId: "shinesungame",
+        databaseURL: "https://shinesungame-default-rtdb.firebaseio.com",
+        storageBucket: "shinesungame.firebasestorage.app",
+        messagingSenderId: "716211150472",
+        appId: "1:716211150472:web:ad27a69f590a9c7bfb893d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tg = window.Telegram.WebApp;
+    const botUsername = "ShineSunGold_bot";
+    let user = tg.initDataUnsafe.user || { id: "dev_test", first_name: "Player" };
+    let score = 0;
     let currentCombo = [];
-    const target = ['☀️', '💎', '🔥'];
+    const targetCombo = ['☀️', '💎', '🔥'];
 
-    const botUsername = "ShineSunGold_bot"; // TON VRAI BOT
-    let userId = "0000";
-
-    function updateUI() {
-        document.getElementById('score-display').innerText = Math.floor(score).toLocaleString();
-        document.getElementById('energy-val').innerText = energy + "/1000";
-        document.getElementById('energy-bar').style.width = (energy/10) + "%";
+    function init() {
+        db.ref('users/' + user.id).on('value', (snap) => {
+            const data = snap.val();
+            if(data) { score = data.score; updateUI(); }
+            else { checkReferral(); db.ref('users/' + user.id).set({name: user.first_name, score: 0}); }
+        });
     }
 
-    // FONCTION PARTAGE VIRAL
-    function shareToTelegram() {
-        const url = `https://t.me/${botUsername}?start=${userId}`;
-        const text = "☀️ Join me on ShineSun! Tap, earn, and win 5M daily combo! 🚀";
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-        window.open(shareUrl, '_blank');
-    }
-
-    function copyLink() {
-        const url = `https://t.me/${botUsername}?start=${userId}`;
-        navigator.clipboard.writeText(url);
-        alert("Copied!");
-    }
-
-    document.getElementById('sun-btn').addEventListener('click', (e) => {
-        if(energy > 0) {
-            score++; energy--;
-            const d = document.createElement('div'); d.className='plus-one'; 
-            d.style.left=e.clientX+'px'; d.style.top=e.clientY+'px'; 
-            d.innerText="+1"; document.body.appendChild(d);
-            setTimeout(()=>d.remove(), 700); updateUI(); save();
+    function checkReferral() {
+        const params = new URLSearchParams(window.location.search);
+        const refId = params.get('tgWebAppStartParam');
+        if(refId && refId !== user.id.toString()) {
+            db.ref('users/' + refId + '/score').transaction(s => (s || 0) + 50000);
         }
+    }
+
+    function updateUI() { document.getElementById('score-display').innerText = Math.floor(score).toLocaleString(); }
+    
+    document.getElementById('sun-btn').addEventListener('click', () => {
+        score++; updateUI(); db.ref('users/' + user.id).update({score: score});
     });
-
-    function showView(v) {
-        document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(v !== 'game') {
-            document.getElementById(v + '-panel').style.display = 'block';
-            document.getElementById('nav-btn-' + v).classList.add('active');
-        } else {
-            document.getElementById('nav-btn-home').classList.add('active');
-        }
-    }
-
-    function buy(cost) { if(score >= cost) { score -= cost; updateUI(); save(); alert("Boost OK!"); } }
 
     function tryCombo(s) {
         if(currentCombo.length < 3) {
@@ -187,25 +121,40 @@
             document.getElementById(`slot-${currentCombo.length-1}`).innerText = s;
             document.getElementById(`slot-${currentCombo.length-1}`).classList.add('active');
             if(currentCombo.length === 3) {
-                if(JSON.stringify(currentCombo) === JSON.stringify(target)) { score += 5000000; alert("5,000,000 $SHINE WIN!"); }
-                else { alert("Fail"); currentCombo = []; setTimeout(()=> { for(let i=0;i<3;i++){document.getElementById(`slot-${i}`).innerText="?";document.getElementById(`slot-${i}`).classList.remove('active');}}, 500); }
-                updateUI(); save();
+                if(JSON.stringify(currentCombo) === JSON.stringify(targetCombo)) {
+                    score += 5000000; alert("COMBO GAGNANT ! +5M $SHINE");
+                } else { alert("Raté !"); }
+                currentCombo = [];
+                setTimeout(() => { for(let i=0;i<3;i++) { 
+                    document.getElementById(`slot-${i}`).innerText="?"; 
+                    document.getElementById(`slot-${i}`).classList.remove('active'); 
+                }}, 1000);
+                db.ref('users/' + user.id).update({score: score});
             }
         }
     }
 
-    setInterval(() => { if(energy < 1000) energy++; updateUI(); }, 1500);
-    function save() { localStorage.setItem('sh_score', score); }
+    function buy(cost) { if(score >= cost) { score -= cost; db.ref('users/' + user.id).update({score: score}); alert("Achat réussi !"); } }
+    function completeMission(reward) { score += reward; db.ref('users/' + user.id).update({score: score}); alert("Mission terminée !"); }
 
-    window.onload = () => {
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        if(tg.initDataUnsafe.user) {
-            userId = tg.initDataUnsafe.user.id;
-            document.getElementById('ref-link-display').innerText = `https://t.me/${botUsername}?start=${userId}`;
-        }
-        updateUI();
-    };
+    function shareToTelegram() {
+        const url = `https://t.me/${botUsername}/myapp?startapp=${user.id}`;
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=Rejoins-moi sur ShineSun Gold ! ☀️`);
+    }
+
+    function copyLink() {
+        const url = `https://t.me/${botUsername}/myapp?startapp=${user.id}`;
+        navigator.clipboard.writeText(url); alert("Lien copié !");
+    }
+
+    function showView(v) {
+        document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(v !== 'game') { document.getElementById(v + '-panel').style.display = 'block'; document.getElementById('nav-' + v).classList.add('active'); }
+        else { document.getElementById('nav-game').classList.add('active'); }
+    }
+
+    window.onload = () => { tg.expand(); init(); };
 </script>
 </body>
 </html>
