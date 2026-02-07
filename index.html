@@ -28,7 +28,6 @@
         .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-btn { color: #555; font-size: 10px; text-align: center; cursor: pointer; flex: 1; font-weight: bold; }
         .nav-btn.active { color: var(--sun-main); }
-        /* Support for Arabic (RTL) */
         body.lang-ar { direction: rtl; }
     </style>
 </head>
@@ -119,10 +118,11 @@
         document.getElementById('txt-mission-title').innerText = texts.mission;
         document.getElementById('txt-shop-title').innerText = texts.shop;
         
+        // --- MISE À JOUR DES MISSIONS AVEC TES LIENS ---
         document.getElementById('missions-container').innerHTML = `
-            <div class="card-item"><div><b>TikTok</b></div><button class="btn-buy" onclick="completeMission('tt',20000,'https://tiktok.com/@shinesungold')">GO</button></div>
-            <div class="card-item"><div><b>Telegram</b></div><button class="btn-buy" onclick="completeMission('tg',15000,'https://t.me/shinesun_gold')">JOIN</button></div>
-            <div class="card-item"><div><b>X (Twitter)</b></div><button class="btn-buy" onclick="completeMission('x',10000,'https://x.com/shinesun_gold')">X</button></div>`;
+            <div class="card-item"><div><b>TikTok</b><br><small>+20,000 $SHINE</small></div><button class="btn-buy" onclick="completeMission('tt',20000,'https://www.tiktok.com/@shinesunsol')">GO</button></div>
+            <div class="card-item"><div><b>Telegram</b><br><small>+15,000 $SHINE</small></div><button class="btn-buy" onclick="completeMission('tg',15000,'https://t.me/+PaP4Z39M2Pc3NmNk')">JOIN</button></div>
+            <div class="card-item"><div><b>X (Twitter)</b><br><small>+10,000 $SHINE</small></div><button class="btn-buy" onclick="completeMission('x',10000,'https://x.com/ShineSunonSol')">X</button></div>`;
     }
 
     function init() {
